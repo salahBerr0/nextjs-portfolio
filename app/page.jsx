@@ -1,9 +1,12 @@
-import About from "@/components/About";
-import Experience from "@/components/Experience";
-import Hero from "@/components/Hero";
-import Project from '@/components/Project';
-import Feedback from "@/components/Feedback";
+import dynamic from "next/dynamic";
+const Hero = dynamic(() => import("@/components/Hero"));
+const About = dynamic(() => import("@/components/About"));
+const Skill = dynamic(() => import("@/components/Skill"));
+const Project = dynamic(() => import("@/components/Project"));
+const Experience = dynamic(() => import("@/components/Experience"));
+
 export default function Home() {
+
   return (
     <main className="relative min-h-screen grid content-center justify-items-center py-32"> {/* Added relative and min-h-screen */}
       <div className="relative z-10">
@@ -13,11 +16,11 @@ export default function Home() {
         <section id="about">
           <About />
         </section>
+        <section id="skill">
+          <Skill/>
+        </section>
         <section id="project">
           <Project />
-        </section>
-        <section id="feedback">
-          <Feedback/>
         </section>
         <section id="experience">
           <Experience />

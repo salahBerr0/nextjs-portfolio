@@ -1,5 +1,4 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import '@fortawesome/fontawesome-free/css/all.min.css';
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,11 +7,13 @@ import StarsBackground from "@/components/StarsBackground";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap', // Add for better font loading
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap',
 });
 
 export const metadata = {
@@ -23,7 +24,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} relative`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <StarsBackground />
         <Navbar/>
         <main className="min-h-screen relative z-10">{children}</main>

@@ -1,5 +1,35 @@
-@tailwind base;@tailwind components;@tailwind utilities;
-body{
-  background-color: black;
-  color:white
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {background-color: black;color: white;}
+
+@keyframes fadeInDown {
+    from {opacity: 0;transform: translateY(-20px);}
+    to {opacity: 1;transform: translateY(0);}
+}
+
+.navbar-fadeDown {animation: fadeInDown 2s ease-out;}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.stars-fadeIn {
+    animation: fadeIn 0.5s ease-out 0.5s forwards;
+    animation-fill-mode: both;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
