@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {background-color: black;color: white;}
 
 @keyframes fadeInDown {
@@ -25,11 +26,23 @@ body {background-color: black;color: white;}
     animation-fill-mode: both;
 }
 
-/* Reduced motion for users who prefer it */
+/* Reduced motion for users who prefer it 
 @media (prefers-reduced-motion: reduce) {
     * {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+*/
+html {
+  scroll-behavior: smooth;
+}
+
+canvas {
+  display: block;
+}
+
+.heroLine{
+    background: linear-gradient(#ffffff, transparent);
 }
