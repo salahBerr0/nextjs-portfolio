@@ -7,60 +7,81 @@ export default function About(){
     const aboutSectionRef = useRef(null);
     const [videoError, setVideoError] = useState(false);
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+    const [isInView, setIsInView] = useState(false);
 
-    // Intersection Observer to detect when About section is in viewport
     useEffect(() => {
         const video = videoRef.current;
         const aboutSection = aboutSectionRef.current;
-        
         if (!video || !aboutSection) return;
-
         const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && isVideoLoaded) {
-                    // About section is in view - play video
-                    video.play().catch(error => {
-                        console.error("Video play failed:", error);
-                        setVideoError(true);
-                    });
-                } else {
-                    // About section is out of view - pause video and reset to start
-                    video.pause();
-                    video.currentTime = 0; // Reset to beginning
-                }
-            },
-            { 
-                threshold: 0.5, // Trigger when 50% of section is visible
-                rootMargin: '0px' 
-            }
+            ([entry]) => {if (entry.isIntersecting) {setIsInView(true);} else {setIsInView(false);}},
+            { threshold: 0.5,rootMargin: '0px' }
         );
-
         observer.observe(aboutSection);
+        return () => {observer.disconnect();};
+    }, []);
 
-        return () => {
-            observer.disconnect();
-        };
-    }, [isVideoLoaded]);
-
-    // Handle video load
+    // Handle video play/pause based on viewport and loaded state
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
 
-        const handleVideoLoad = () => {
-            setIsVideoLoaded(true);
+        const handleVideoPlay = async () => {
+            if (isInView && isVideoLoaded) {
+                try {
+                    // Ensure video is muted (required for autoplay)
+                    video.muted = true;
+                    video.playsInline = true;
+                    
+                    // Attempt to play
+                    await video.play();
+                    console.log("Video started playing");
+                } catch (error) {
+                    console.error("Video play failed:", error);
+                    setVideoError(true);
+                }
+            } else if (!isInView) {
+                // Pause and reset when out of view
+                video.pause();
+                video.currentTime = 0;
+            }
         };
 
-        video.addEventListener('loadeddata', handleVideoLoad);
-        
+        handleVideoPlay();
+    }, [isInView, isVideoLoaded]);
+
+    // Handle video load and metadata
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+        const handleCanPlay = () => {console.log("Video can play");setIsVideoLoaded(true);};
+        const handleLoadStart = () => {console.log("Video loading started");};
+        const handleWaiting = () => {console.log("Video waiting for data");};
+        const handlePlaying = () => {console.log("Video is now playing");};
+        video.addEventListener('canplay', handleCanPlay);
+        video.addEventListener('loadstart', handleLoadStart);
+        video.addEventListener('waiting', handleWaiting);
+        video.addEventListener('playing', handlePlaying);
+        video.preload = "auto";
+        video.load();
+
         return () => {
-            video.removeEventListener('loadeddata', handleVideoLoad);
+            video.removeEventListener('canplay', handleCanPlay);
+            video.removeEventListener('loadstart', handleLoadStart);
+            video.removeEventListener('waiting', handleWaiting);
+            video.removeEventListener('playing', handlePlaying);
         };
     }, []);
 
-    const handleVideoError = () => {
-        console.error("Video failed to load");
-        setVideoError(true);
+    const handleVideoError = (e) => {console.error("Video failed to load:", e);setVideoError(true);};
+    // Add a manual play button for mobile devices
+    const handleManualPlay = async () => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        try {await video.play();console.log("Manual play successful");
+        } catch (error) {console.error("Manual play failed:", error);alert("Please tap the video to play it. Some devices require direct interaction.");
+        }
     };
 
     return(
@@ -74,23 +95,27 @@ export default function About(){
                         <div role="img" aria-label="profile image + logo video" className="grid content-center justify-items-center gap-1">
                             <span className='text-[#ffffff] w-full flex items-center justify-center rounded-lg text-[15px] md:text-[18px]'>"Where Every Detail is important"</span>
                             <div className="flex items-between justify-center gap-16">
-                                <Image  src='/imgs/profileIMG.JPG'  alt='my profile image'  width={200}  height={200}  className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] object-cover hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]" priority/>
-                                <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] overflow-hidden hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]" >
+                                <Image   src='/imgs/profileIMG.JPG'   alt='my profile image'   width={200}   height={200}   className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] object-cover hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]"  priority/>
+                                <div className="relative w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] overflow-hidden hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]">
                                     {videoError ? (
-                                        <Image  src="/imgs/profileIMG.JPG"  alt="Video content"  width={250} height={250} className="object-cover w-full h-full"/>
+                                        <Image src="/imgs/profileIMG.JPG" alt="Video content"  width={250} height={250} className="object-cover w-full h-full"/>
                                     ) : (
-                                        <video   ref={videoRef}  className="w-full h-full object-cover"  muted  
-                                            playsInline 
-                                            preload="auto" 
-                                            onError={handleVideoError} 
-                                            poster="/imgs/video-poster.jpg" 
-                                            loop 
-                                            // Remove autoPlay - we control it manually
-                                        >
-                                            <source src="/vds/bsVd2.webm" type="video/webm" />
-                                            <source src="/vds/bsVd2.mp4" type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
+                                        <>
+                                            <video ref={videoRef}  className="w-full h-full object-cover"  muted  playsInline preload="auto"onError={handleVideoError}poster="/imgs/video-poster.jpg"loop>
+                                                <source src="/vds/bsVd2.webm" type="video/webm" />
+                                                <source src="/vds/bsVd2.mp4" type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            {!isVideoLoaded && (
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                                    <div className="text-white text-center">
+                                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                                                        <span className="text-sm">Loading video...</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {isVideoLoaded && !isInView && (<button onClick={handleManualPlay} className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-20 transition-all"><div className="w-16 h-16 bg-white bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all"><svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></button>)}
+                                        </>
                                     )}
                                 </div>
                             </div>
