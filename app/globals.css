@@ -46,3 +46,41 @@ canvas {
 .heroLine{
     background: linear-gradient(#ffffff, transparent);
 }
+
+.skillDiv:hover > .skillName{
+    display: block;
+}
+
+.skillDiv:hover > .skillImg{
+    background-color: white;
+    box-shadow: 0 0 15px white;
+}
+
+.bigSkillDiv:hover > .skillDiv{
+    opacity: 0.2;
+}
+
+.bigSkillDiv .skillDiv:hover{
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+
+
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-33.333%);
+    }
+}
+.animate-scroll {
+    animation: scroll 5s linear infinite;
+    display: inline-flex;
+}
+
+.animate-scroll:hover {
+    animation-play-state: paused;
+}

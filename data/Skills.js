@@ -1,0 +1,15 @@
+export const Skills = [
+  { _id: '1', skillName: 'Hailuo Ai', skillImageUrl: "/imgs/github.png" },
+  { _id: '2', skillName: 'VN', skillImageUrl: '/imgs/gmail.png' },
+  { _id: '3', skillName: 'Xampp', skillImageUrl: '/imgs/linkedIn.png'},
+  { _id: '4', skillName: 'VS Code', skillImageUrl: '/imgs/Bootstrap.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/C.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/Canva.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/CapCut.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/CiscoPaquetTracer.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/CodeBlocks.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/CSS.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/Docker.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/Eclipse.png'},
+  { _id: '5', skillName: 'Tailwind Css', skillImageUrl: '/imgs/Excel.png'},
+];

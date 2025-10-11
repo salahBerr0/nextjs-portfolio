@@ -1,0 +1,15 @@
+export const Tools = [
+  { _id: '1', toolName: 'Hailuo Ai', toolImageUrl: "/imgs/github.png" },
+  { _id: '2', toolName: 'VN', toolImageUrl: '/imgs/gmail.png' },
+  { _id: '3', toolName: 'Xampp', toolImageUrl: '/imgs/linkedIn.png'},
+  { _id: '4', toolName: 'VS Code', toolImageUrl: '/imgs/Bootstrap.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/C.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/Canva.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/CapCut.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/CiscoPaquetTracer.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/CodeBlocks.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/CSS.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/Docker.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/Eclipse.png'},
+  { _id: '5', toolName: 'Tailwind Css', toolImageUrl: '/imgs/Excel.png'},
+];
