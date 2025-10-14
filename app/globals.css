@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
+*{
+    --first-color:#4F46E5;
+}
 body {background-color: black;color: white;}
 
 @keyframes fadeInDown {
@@ -83,4 +85,12 @@ canvas {
 
 .animate-scroll:hover {
     animation-play-state: paused;
+}
+
+.bigLinksDiv:hover > .linkText{
+    display: block;
+}
+
+.projectCard:hover > .dragText{
+    opacity: 0;
 }

@@ -7,7 +7,7 @@ const Experience = dynamic(() => import("@/components/Experience"));
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen z-10">
+    <main className="relative min-h-screen z-10 overflow-hidden">
           <Hero/>
           <About />
           <Skill/>
