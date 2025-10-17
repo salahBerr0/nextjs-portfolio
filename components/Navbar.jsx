@@ -20,8 +20,8 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="navbar-fadeDown fixed top-0 left-0 w-full z-50 transition-all duration-300 sm:px-16 px-4 flex items-center justify-between py-2 mb-4 bg-transparent backdrop-blur-sm">
-      <ScrollLink to="hero" smooth={true} duration={600} offset={-100}className="flex items-center gap-2 cursor-pointer hover:opacity-70 duration-300">
+    <nav className="navbar-fadeDown fixed top-0 left-0 w-full z-50 transition-all duration-300 sm:px-16 px-6 flex items-center justify-between py-2 mb-4 bg-transparent backdrop-blur-md">
+      <ScrollLink to="hero" smooth={true} duration={600} offset={-100} className="flex items-center gap-2 cursor-pointer hover:opacity-70 duration-300">
         <Image src="/imgs/bs3d.png" alt="white bs logo" width={30} height={30} className="object-contain w-auto h-auto" priority/>
         <p className="flex items-center justify-center text-[18px] font-bold"><span className="navText">SALAH Berredjem</span>&nbsp;<span className="lg:hidden xl:block text-gray-400">| Portfolio</span></p>
       </ScrollLink>

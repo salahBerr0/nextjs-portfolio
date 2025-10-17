@@ -8,8 +8,6 @@ export const Projects = [
     projImageUrls: [{priority: 1, url: "/imgs/Bootstrap.png"}, {priority: 2, url: "/imgs/Canva.png"},{priority: 4, url: "/imgs/Eclipse.png"}],
     projVideosUrls: [{priority: 3, url: "/vds/bsVd.mp4"}]
   },
-    { _id: '3', projTitle: 'sdf',projTagLine: "tagline2",projDescription: ' des2',projCategory: ['cat21','cat22'],projTechStack: [4,5,6],projLiveDemoLink: 'demoLink2',projSourceCodeLink: 'sourcelink2',projLikesCount: 2,
-    projImageUrls: [{priority: 1, url: "/imgs/Bootstrap.png"}, {priority: 2, url: "/imgs/Canva.png"},{priority: 4, url: "/imgs/Eclipse.png"}],
-    projVideosUrls: [{priority: 3, url: "/vds/bsVd.mp4"}]
-  },
+
+
 ];

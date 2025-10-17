@@ -27,8 +27,8 @@ const ProjectCard = memo(({ project, pos, isDragged, onCardMove, onDragStart, on
 
   return (
     <TinderCard  onSwipe={handleSwipe}  preventSwipe={["up", "down"]}  flickOnSwipe={false}   onDrag={handleDrag} onDragStart={handleDragStart}   onDragEnd={onDragEnd}   className="cursor-grab" >
-      <motion.div className="w-full overflow-hidden h-[500px] relative rounded-2xl py-[4px] shadow-xl bg-cover bg-center text-white flex flex-col"  animate={!isDragged ? { x: [0, 5, -5, 5,0], y: [0, -5, -5, 5, 0] } : {}} transition={{ duration: 1.5, repeat: !isDragged ? Infinity : 0, ease: "easeInOut" }} style={{userSelect: "none",  transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)`,  transition: isDragged ? "none" : "transform 0.3s ease",  backgroundImage: backgroundImage,  backgroundRepeat: "no-repeat",  backgroundSize: "cover",  boxShadow: "0 12px 24px rgba(0,0,0,0.3)",}}>
-        <article className="projectCard hover:bg-black/80 transition-all duration-300 bg-black/50 overflow-hidden p-5 border-[2px] rounded-2xl w-full h-[400px] flex-grow flex flex-col justify-between">
+      <motion.div className="w-full overflow-hidden h-[500px] relative py-[4px] shadow-xl bg-cover bg-center text-white flex flex-col rounded-lg"  animate={!isDragged ? { x: [0, 5, -5, 5,0], y: [0, -5, -5, 5, 0] } : {}} transition={{ duration: 1.5, repeat: !isDragged ? Infinity : 0, ease: "easeInOut" }} style={{userSelect: "none",  transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)`,  transition: isDragged ? "none" : "transform 0.3s ease",  backgroundImage: backgroundImage,  backgroundRepeat: "no-repeat",  backgroundSize: "cover",  boxShadow: "0 12px 24px rgba(0,0,0,0.3)",}}>
+        <article className="projectCard hover:bg-black/80 rounded-lg transition-all duration-300 bg-black/50 overflow-hidden p-5 border-[2px] w-full h-[400px] flex-grow flex flex-col justify-between">
           <div className="grid content-center justify-items-start gap-2">
             <h3 className="text-2xl text-start font-bold">{project.projTitle}</h3>
             <span className="flex flex-wrap gap-2" >{categories}</span>
@@ -250,10 +250,13 @@ const Project = () => {
         }, [expandedIndex, projects, positions, draggedId, onCardMove, onDragStart, onDragEnd, onSwipe, closeExpanded, setExpandedProjectId]);
 
     return (
-        <section  id="project"  className="relative p-5 w-full flex flex-col items-center justify-center mb-5 overflow-visible" style={{ userSelect: "none" }}>
-            <motion.p className="skillTitle text-white text-center font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] my-10" animate={{ x: [0, 5, -5, 5, 0], y: [0, 5, -5, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>Projects</motion.p>
-            {projects.length === 0 && (<p className="text-gray-500">No projects available</p>)}
-            {mainContent}
+        <section  id="project"  className="relative px-16 w-full flex flex-col items-center justify-center mb-5 overflow-visible" style={{ userSelect: "none" }}>
+          <div role="textbox" className="grid content-center justify-items-start w-full">
+            <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]">What I have done so far</p>
+            <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px]">Recently Projects</h2>
+          </div>
+          {projects.length === 0 && (<p className="text-gray-500">No projects available</p>)}
+          {mainContent}
         </section>
     );
 };

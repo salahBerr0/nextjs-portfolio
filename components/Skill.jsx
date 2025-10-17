@@ -9,9 +9,13 @@ export default function Skill() {
   const duplicatedSkills = [...Skills, ...Skills];
 
   return (
-  <main id='skill' className="grid content-center  justify-items-center w-full overflow-hidden px-5 py-1 my-10 ">
-    <aside className=" overflow-visible grid content-center justify-items-start border-[2px] border-white w-full max-w-2xl" style={{boxShadow:'0 0 5px #ffffff'}}>
-      <article className="overflow-hidden whitespace-nowrap rounded-sm w-full py-1" >
+  <main id='skill' className="grid content-center  justify-items-center w-full overflow-hidden px-16 py-1">
+    <div role="textbox" className="grid content-center justify-items-start w-full">
+      <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]">What I have mastered so far</p>
+      <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px]">Skills</h2>
+    </div>
+    <section className=" overflow-visible grid content-center justify-items-start border-[2px] border-white rounded-md w-full max-w-2xl" style={{boxShadow:'0 0 5px #ffffff'}}>
+      <article className="overflow-hidden whitespace-nowrap w-full py-1" >
         <div className="inline-flex animate-scroll gap-3 bigSkillDiv my-1">
           {duplicatedSkills.map((skill, index) => (
             <article key={`${skill._id}-${index}`} className="inline-flex  skillDiv cursor-auto flex-col items-center justify-center flex-shrink-0">
@@ -23,7 +27,7 @@ export default function Skill() {
           ))}
         </div>
       </article>
-      <article className="overflow-hidden whitespace-nowrap rounded-sm w-full py-1">
+      <article className="overflow-hidden whitespace-nowrap w-full py-1">
         <div className="inline-flex animate-scroll gap-3 my-1">
           {duplicatedTools.map((tool, index) => (
             <article key={`${tool._id}-${index}`} className="inline-flex hover:opacity-100 cursor-auto flex-col items-center justify-center flex-shrink-0">
@@ -34,7 +38,7 @@ export default function Skill() {
           ))}
         </div>
       </article>
-    </aside>
+    </section>
   </main>
   );
 }
