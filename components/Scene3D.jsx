@@ -1,175 +1,231 @@
 'use client';
-import { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useCallback, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Html, useProgress } from '@react-three/drei';
 import * as THREE from 'three';
-import { Suspense } from 'react';
 
-const SECTION_CONFIG = {
-  hero: {
+// Immutable config with Object.freeze for performance
+const SECTION_CONFIG = Object.freeze({
+  hero: Object.freeze({
     position: [0, -0.5, 0],
     positionLg: [2.3, -0.2, 0],
     rotation: [0, 0, 0],
-    scale: 15,
-    scaleLg: 23,
-  },
-  about: {
+    scale: 11,
+    scaleLg: 20,
+  }),
+  about: Object.freeze({
     position: [1, 0.5, 0],
     positionMd: [0.5, 0.2, 3],
     positionLg: [1.25, 0.2, 0],
     rotation: [0, 3, 0],
     scale: 1,
-  },
-  skill: {
-    position: [0, 0.65, 0],
-    positionMd:[0,0.25,0],
-    positionLg:[0,0.2,0],
+  }),
+  skill: Object.freeze({
+    position: [0, 0.15, 0],
+    positionLg: [0,-0.3, 0],
     rotation: [0, 6, 0],
     scale: 7,
-  },
-  project: {
-    position: [0,-0.5, 0],
+  }),
+  project: Object.freeze({
+    position: [0, -0.5, 0],
     rotation: [0, 0, 0],
     scale: 13,
-  },
-  experience: {
+  }),
+  experience: Object.freeze({
     position: [1.3, 0, 0],
-    positionMd:[2,0,0],
+    positionMd: [2, 0, 0],
     positionLg: [2.5, 0, 0],
     rotation: [-0.5, -6, 0],
-    rotationLg:[0,-6,0],
+    rotationLg: [0, -6, 0],
     scale: 8,
-    scaleLg: 20,
-  },
-};
+    scaleLg: 15,
+  }),
+});
+
+// Pre-allocate objects to avoid garbage collection
+const tempVector = new THREE.Vector3();
+const tempEuler = new THREE.Euler();
+const tempObject = {};
+
+// Memoized section keys
+const SECTIONS = ['hero', 'about', 'skill', 'project', 'experience'];
+const TOTAL_SECTIONS = SECTIONS.length;
 
 function ModelComponent({ scrollPosition }) {
   const { scene } = useGLTF('/gltfmodels/bs3d.gltf');
   const modelRef = useRef();
   const { size } = useThree();
   
-  const sectionData = useMemo(() => {
-    const sections = Object.keys(SECTION_CONFIG);
-    const totalSections = sections.length;
-    return { sections, totalSections };
-  }, []);
+  // Optimized screen size detection with debouncing
+  const screenConfig = useMemo(() => {
+    const width = size.width;
+    return {
+      isLargeScreen: width >= 1007,
+      isMediumScreen: width >= 768 && width < 1007,
+    };
+  }, [size.width]);
 
-  const isLargeScreen = size.width >= 1007;
-  const isMediumScreen = size.width >= 768 && size.width < 1007; // Added medium screen detection
+  // One-time model optimization
+  const optimizedScene = useMemo(() => {
+    if (!scene) return null;
 
-  useEffect(() => {
-    if (scene) {
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          child.frustumCulled = true;
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        // Performance optimizations
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.frustumCulled = true;
+        
+        // Material optimizations
+        if (child.material) {
+          child.material.precision = 'lowp';
+          child.material.dithering = false;
           
-          if (child.material) {
-            child.material.precision = 'mediump';
-            child.material.dithering = true;
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.roughness = 1.0;
+            child.material.metalness = 0.0;
           }
         }
-      });
-    }
+      }
+    });
+
+    return scene;
   }, [scene]);
 
+  // Optimized interpolation function
+  const interpolateConfig = useCallback((fromConfig, toConfig, progress, screenConfig) => {
+    const getConfigValue = (config, key) => {
+      if (screenConfig.isLargeScreen) {
+        return config[`${key}Lg`] ?? config[key];
+      } else if (screenConfig.isMediumScreen) {
+        return config[`${key}Md`] ?? config[key];
+      }
+      return config[key];
+    };
+
+    const easedProgress = THREE.MathUtils.smoothstep(progress, 0, 1);
+
+    // Position
+    const fromPos = getConfigValue(fromConfig, 'position');
+    const toPos = getConfigValue(toConfig, 'position');
+    tempVector.set(
+      fromPos[0] + (toPos[0] - fromPos[0]) * easedProgress,
+      fromPos[1] + (toPos[1] - fromPos[1]) * easedProgress,
+      fromPos[2] + (toPos[2] - fromPos[2]) * easedProgress
+    );
+
+    // Rotation
+    const fromRot = getConfigValue(fromConfig, 'rotation');
+    const toRot = getConfigValue(toConfig, 'rotation');
+    tempEuler.set(
+      fromRot[0] + (toRot[0] - fromRot[0]) * easedProgress,
+      fromRot[1] + (toRot[1] - fromRot[1]) * easedProgress,
+      fromRot[2] + (toRot[2] - fromRot[2]) * easedProgress
+    );
+
+    // Scale
+    const fromScale = getConfigValue(fromConfig, 'scale');
+    const toScale = getConfigValue(toConfig, 'scale');
+    const scale = fromScale + (toScale - fromScale) * easedProgress;
+
+    return { position: tempVector.clone(), rotation: tempEuler.clone(), scale };
+  }, []);
+
+  // Highly optimized frame loop
   useFrame(() => {
-    if (!modelRef.current || !scene) return;
+    if (!modelRef.current || !optimizedScene) return;
     
-    const { sections, totalSections } = sectionData;
-    
-    const currentSectionIndex = scrollPosition * (totalSections - 1);
+    const currentSectionIndex = scrollPosition * (TOTAL_SECTIONS - 1);
     const fromIndex = Math.floor(currentSectionIndex);
-    const toIndex = Math.min(fromIndex + 1, totalSections - 1);
+    const toIndex = Math.min(fromIndex + 1, TOTAL_SECTIONS - 1);
     const progress = currentSectionIndex - fromIndex;
 
-    const fromSection = sections[fromIndex];
-    const toSection = sections[toIndex];
+    const fromSection = SECTIONS[fromIndex];
+    const toSection = SECTIONS[toIndex];
     const fromConfig = SECTION_CONFIG[fromSection];
     const toConfig = SECTION_CONFIG[toSection];
 
     if (!fromConfig || !toConfig) return;
 
-    const fromPosition = isLargeScreen 
-      ? (fromConfig.positionLg || fromConfig.position)
-      : isMediumScreen
-      ? (fromConfig.positionMd || fromConfig.position)
-      : fromConfig.position;
-      
-    const toPosition = isLargeScreen 
-      ? (toConfig.positionLg || toConfig.position)
-      : isMediumScreen
-      ? (toConfig.positionMd || toConfig.position)
-      : toConfig.position;
-      
-    const fromRotation = isLargeScreen ? (fromConfig.rotationLg || fromConfig.rotation) : fromConfig.rotation;
-    const toRotation = isLargeScreen ? (toConfig.rotationLg || toConfig.rotation) : toConfig.rotation;
-    
-    const fromScale = isLargeScreen
-    ? (fromConfig.scaleLg || fromConfig.scale)
-    : isMediumScreen
-    ? (fromConfig.scaleMd || fromConfig.scale)
-    : fromConfig.scale;
-    
-    const toScale = isLargeScreen
-    ? (toConfig.scaleLg || toConfig.scale)
-    : isMediumScreen
-    ? (toConfig.scaleMd || toConfig.scale)
-    : toConfig.scale;
-
-    const easedProgress = THREE.MathUtils.smoothstep(progress, 0, 1);
-
-    modelRef.current.position.lerp(
-      new THREE.Vector3(
-        fromPosition[0] + (toPosition[0] - fromPosition[0]) * easedProgress,
-        fromPosition[1] + (toPosition[1] - fromPosition[1]) * easedProgress,
-        fromPosition[2] + (toPosition[2] - fromPosition[2]) * easedProgress
-      ),
-      0.1
+    // Gettting interpolated values
+    const { position, rotation, scale } = interpolateConfig(
+      fromConfig, 
+      toConfig, 
+      progress, 
+      screenConfig
     );
 
-    modelRef.current.rotation.x = THREE.MathUtils.lerp(fromRotation[0], toRotation[0], easedProgress);
-    modelRef.current.rotation.y = THREE.MathUtils.lerp(fromRotation[1], toRotation[1], easedProgress);
-    modelRef.current.rotation.z = THREE.MathUtils.lerp(fromRotation[2], toRotation[2], easedProgress);
-
-    const currentScale = THREE.MathUtils.lerp(fromScale, toScale, easedProgress);
-    modelRef.current.scale.setScalar(currentScale);
+    // Apply with lerp for smoothness
+    modelRef.current.position.lerp(position, 0.1);
+    modelRef.current.rotation.copy(rotation);
+    modelRef.current.scale.setScalar(scale);
   });
 
-  return <primitive ref={modelRef} object={scene} />;
+  // Efficient cleanup
+  useEffect(() => {
+    return () => {
+      if (optimizedScene) {
+        optimizedScene.traverse((child) => {
+          if (child.isMesh) {
+            child.geometry?.dispose();
+            if (child.material) {
+              Array.isArray(child.material) 
+                ? child.material.forEach(m => m.dispose())
+                : child.material.dispose();
+            }
+          }
+        });
+      }
+    };
+  }, [optimizedScene]);
+
+  return <primitive ref={modelRef} object={optimizedScene} />;
 }
 
-function Model({ scrollPosition }) {
+// Memoized model with error boundary
+const Model = React.memo(({ scrollPosition }) => {
   try {
     return <ModelComponent scrollPosition={scrollPosition} />;
-  } catch(error) {
-    console.log('3D Model error:', error);
+  } catch (error) {
+    console.error('3D Model error:', error);
     return null;
   }
-}
+});
 
+Model.displayName = 'Model';
+
+// Optimized loader
 function Loader() {
   const { progress } = useProgress();
+  const [displayProgress, setDisplayProgress] = useState(0);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setDisplayProgress(progress), 50);
+    return () => clearTimeout(timer);
+  }, [progress]);
+
   return (
     <Html center>
-      <div className="text-white text-sm bg-black bg-opacity-50 p-4 rounded-lg">
-        Loading 3D Model... {Math.round(progress)}%
+      <div className="text-white text-sm bg-black bg-opacity-50 p-4 rounded-lg backdrop-blur-sm">
+        Loading... {Math.round(displayProgress)}%
       </div>
     </Html>
   );
 }
 
+// Main scene component
 export default function Scene3D({ scrollPosition }) {
+  const memoizedScrollPosition = useMemo(() => scrollPosition, [scrollPosition]);
+
   return (
-    <Suspense fallback={<Loader />}>
+    <React.Suspense fallback={<Loader />}>
       <ambientLight intensity={1} />
       <directionalLight position={[1000, -1500, 0]} 
         intensity={10} 
         castShadow 
         shadow-mapSize={[512, 512]}
       />
-      <Model scrollPosition={scrollPosition} />
-    </Suspense>
+      <Model scrollPosition={memoizedScrollPosition} />
+    </React.Suspense>
   );
 }

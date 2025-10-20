@@ -4,34 +4,33 @@ import { Canvas } from '@react-three/fiber';
 import { Preload } from '@react-three/drei';
 import Scene3D from './Scene3D';
 
-// Throttle function for performance
-function throttle(func, limit) {
-  let inThrottle;
-  return function(...args) {
-    if (!inThrottle) {
-      func.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+// High-performance throttle with RAF
+function throttleRAF(func) {
+  let rafId = null;
+  return (...args) => {
+    if (rafId === null) {
+      rafId = requestAnimationFrame(() => {
+        func.apply(this, args);
+        rafId = null;
+      });
     }
-  }
+  };
 }
 
 export default function ThreeBackground() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const scrollRef = useRef(0);
+  const sectionDataRef = useRef({ heights: [], total: 0 });
   const rafRef = useRef();
-  const sectionHeightsRef = useRef([]);
 
-  // Set client-side flag - runs only in browser
+  // Client-side detection
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Calculate section heights and positions
+  // Memoized section calculation
   const calculateSectionData = useCallback(() => {
-    if (!isClient) return;
-    
     const sections = ['hero', 'about', 'skill', 'project', 'experience'];
     const heights = [];
     let totalHeight = 0;
@@ -50,43 +49,47 @@ export default function ThreeBackground() {
       }
     });
 
-    sectionHeightsRef.current = heights;
-    return totalHeight;
-  }, [isClient]);
+    sectionDataRef.current = { heights, total: totalHeight };
+  }, []);
 
-  // Calculate scroll position based on actual section heights
+  // Optimized scroll position calculation
   const updateScrollPosition = useCallback(() => {
-    if (!isClient) return;
-    
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const sections = sectionHeightsRef.current;
+    const { heights, total } = sectionDataRef.current;
     
-    if (sections.length === 0) {
+    if (!heights.length) {
       scrollRef.current = 0;
       return;
     }
 
-    const totalHeight = sections[sections.length - 1].end;
-    
-    // Find current section and progress within it
-    let currentSectionIndex = 0;
-    let progressInSection = 0;
+    // Binary search for current section (more efficient for many sections)
+    let left = 0;
+    let right = heights.length - 1;
+    let currentIndex = 0;
 
-    for (let i = 0; i < sections.length; i++) {
-      const section = sections[i];
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const section = heights[mid];
+      
       if (scrollTop >= section.start && scrollTop <= section.end) {
-        currentSectionIndex = i;
-        progressInSection = (scrollTop - section.start) / section.height;
+        currentIndex = mid;
         break;
+      } else if (scrollTop < section.start) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+        currentIndex = mid;
       }
     }
 
-    // Convert to overall progress (0 to 1 across all sections)
-    const sectionProgress = (currentSectionIndex + progressInSection) / (sections.length - 1);
-    scrollRef.current = Math.min(sectionProgress, 1);
-  }, [isClient]);
+    const currentSection = heights[currentIndex];
+    const progressInSection = (scrollTop - currentSection.start) / currentSection.height;
+    const sectionProgress = (currentIndex + progressInSection) / (heights.length - 1);
+    
+    scrollRef.current = Math.min(Math.max(sectionProgress, 0), 1);
+  }, []);
 
-  // RAF-based scroll handler for smooth performance
+  // RAF-optimized scroll handler
   const handleScroll = useCallback(() => {
     if (!rafRef.current) {
       rafRef.current = requestAnimationFrame(() => {
@@ -96,62 +99,69 @@ export default function ThreeBackground() {
     }
   }, []);
 
-  // Throttled scroll handler
-  const throttledScrollHandler = useCallback(throttle(handleScroll, 16), [handleScroll]);
+  // Throttled scroll with RAF
+  const throttledScroll = useCallback(throttleRAF(() => {
+    updateScrollPosition();
+    handleScroll();
+  }), [updateScrollPosition, handleScroll]);
 
-  // Main effect - setup event listeners
+  // Main effect setup
   useEffect(() => {
     if (!isClient) return;
-    
-    // Initial calculation
+
+    // Initial setup
     calculateSectionData();
     updateScrollPosition();
 
-    const scrollListener = () => {
-      updateScrollPosition();
-      throttledScrollHandler();
-    };
+    // Event listeners with passive for performance
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    window.addEventListener('resize', calculateSectionData, { passive: true });
 
-    // Recalculate on resize (for responsive design)
-    const resizeListener = () => {
-      calculateSectionData();
-      updateScrollPosition();
-    };
+    // Intersection Observer for better performance
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            calculateSectionData();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-    window.addEventListener('scroll', scrollListener, { passive: true });
-    window.addEventListener('resize', resizeListener, { passive: true });
+    // Observe all sections
+    ['hero', 'about', 'skill', 'project', 'experience'].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
 
-    // Cleanup function
     return () => {
-      window.removeEventListener('scroll', scrollListener);
-      window.removeEventListener('resize', resizeListener);
+      window.removeEventListener('scroll', throttledScroll);
+      window.removeEventListener('resize', calculateSectionData);
+      observer.disconnect();
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [calculateSectionData, updateScrollPosition, throttledScrollHandler, isClient]);
+  }, [isClient, calculateSectionData, updateScrollPosition, throttledScroll]);
 
-  // Performance analytics
+  // Performance monitoring
   useEffect(() => {
     if (!isClient) return;
     
     const startTime = performance.now();
-    
-    const trackLoad = () => {
+    const timer = setTimeout(() => {
       const loadTime = performance.now() - startTime;
-      console.log(`🎯 3D Portfolio loaded in ${loadTime.toFixed(0)}ms`);
-    };
+      if (loadTime > 1000) {
+        console.warn(`3D Scene loaded in ${loadTime.toFixed(0)}ms - Consider optimization`);
+      }
+    }, 2000);
 
-    // Track after components are likely loaded
-    const timer = setTimeout(trackLoad, 1500);
     return () => clearTimeout(timer);
   }, [isClient]);
 
-  // Don't render Canvas on server-side to avoid errors
   if (!isClient) {
-    return (
-      <div className="fixed inset-0 -z-10 bg-black" />
-    );
+    return <div className="fixed inset-0 -z-10 bg-black" />;
   }
 
   return (
@@ -159,24 +169,26 @@ export default function ThreeBackground() {
       <Canvas
         camera={{ 
           position: [0, 0, 5], 
-          fov: 50,
+          fov: 45,
           near: 0.1,
-          far: 100 
+          far: 50
         }}
         gl={{ 
-          alpha: true,           // Transparent background
-          antialias: true,       // Smooth edges
-          powerPreference: "high-performance" // Use GPU
+          alpha: true,
+          antialias: false,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: true
         }}
-        dpr={Math.min(window.devicePixelRatio, 2)} // Limit pixel ratio for performance
-        performance={{ min: 0.5 }} // Maintain 50%+ framerate
+        dpr={Math.min(window.devicePixelRatio, 1.5)}
+        performance={{ min: 0.8 }}
+        frameloop="always"
         style={{ 
           background: 'transparent',
-          transform: 'translate3d(0,0,0)' // Force GPU acceleration
         }}
       >
         <Scene3D scrollPosition={scrollProgress} />
-        <Preload all /> {/* Preload all 3D assets */}
+        <Preload all />
       </Canvas>
     </div>
   );
