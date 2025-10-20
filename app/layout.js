@@ -21,6 +21,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Portfolio Berredjem Salah",
   description: "A modern 3D portfolio website with admin dashboard and project management features",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({ children }) {
