@@ -9,27 +9,30 @@ import CriticalFallback from "@/components/fallbacks/CriticalFallback";
 import HighPriorityFallback from "@/components/fallbacks/HighPriorityFallback";
 import LowPriorityFallback from "@/components/fallbacks/LowPriorityFallback";
 import BgFallback from "@/components/fallbacks/BgFallback";
-import MediumPriorityFallback from "@/components/fallbacks/MediumPriorityFallback";
 
-const Footer = dynamic(() => import('@/components/Footer'), {loading: () => (<section className="w-full h-32 flex items-center justify-center border-t"><div className="animate-pulse text-gray-500">Loading footer...</div></section>)});
-const Backgrounds = dynamic(() => import('@/components/Backgrounds'), {loading: () => <div className="fixed inset-0 bg-black" />});
+const Footer = dynamic(() => import('@/components/Footer'), {loading: () => (<section className="w-full h-32 flex items-center justify-center border-t"><div className="animate-pulse text-gray-500">Loading footer...</div></section>),});
+const Backgrounds = dynamic(() => import('@/components/Backgrounds'), {loading: () => <div className="fixed inset-0 bg-black" />,});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
   display: 'swap',
+  preload: true,
+  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: 'swap',
+  preload: false,
+  adjustFontFallback: true,
 });
 
 export const metadata = {
-  title: "Salah Berredjem - Full Stack Developer & 3D Artist",
+  title: "Salah Berredjem - Frontend Developer & Graphic Designer",
   description: "Portfolio showcasing modern web development, 3D graphics, and interactive experiences. Specializing in React, Next.js, and Three.js projects.",
-  keywords: "developer, portfolio, react, nextjs, threejs, 3D artist",
+  keywords: "developer, portfolio, react, nextjs, threejs, graphic design, logos",
   authors: [{ name: "Salah Berredjem" }],
   openGraph: {
     title: "Salah Berredjem - Portfolio",
@@ -45,32 +48,49 @@ export const metadata = {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
+
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <PreloadResources />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Start timing when page begins loading
+              performance.mark('layout-start');
+              
+              // Measure when EVERYTHING is loaded
+              window.addEventListener('load', function() {
+                performance.mark('layout-end');
+                performance.measure('full-page-load', 'layout-start', 'layout-end');
+                
+                const loadTime = performance.getEntriesByName('full-page-load')[0].duration;
+                console.log('📊 Full page loaded in:', loadTime.toFixed(0) + 'ms');
+              });
+            `,
+          }}
+        />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ErrorBoundary componentName="Backgrounds" fallback={<BgFallback />}>
-          <Backgrounds />
-        </ErrorBoundary>
+        <ErrorBoundary  componentName="RootLayout"  fallback={<CriticalFallback />}>
+          <ErrorBoundary componentName="Backgrounds" fallback={<BgFallback />}>
+            <Backgrounds />
+          </ErrorBoundary>
 
-        <ErrorBoundary  componentName="Application" fallback={<CriticalFallback />}>          
           <ErrorBoundary componentName="Navigation" fallback={<HighPriorityFallback componentName="Navigation" />}>
-            <Navbar/>
+            <Navbar />
           </ErrorBoundary>
           
-          <main className="min-h-screen relative z-20">
+          <main className="min-h-screen relative z-20" id="main-content">
             {children}
           </main>
 
           <ErrorBoundary componentName="Footer" fallback={<LowPriorityFallback componentName="Footer" />}>
-            <Footer/>
+            <Footer />
           </ErrorBoundary>
-
         </ErrorBoundary>
       </body>
     </html>

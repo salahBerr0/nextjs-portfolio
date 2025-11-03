@@ -94,12 +94,11 @@ const processTimelineData = () => {
 };
 
 export default async function Experience() {
-  // Process data once on the server
-  const timelineEntries = processTimelineData();
+    const timelineEntries = processTimelineData();
 
   return (
-    <section id="experience" className="min-h-screen grid px-16">
-      <div role="textbox" className="grid content-center justify-items-start w-full">
+    <section id="experience" className="min-h-screen grid px-5 sm:px-8 md:px-16">
+      <div role="textbox" className="grid content-center justify-items-start w-full max-w-4xl">
         <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]">
           What I have done so far
         </p>

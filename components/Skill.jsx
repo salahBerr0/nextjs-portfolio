@@ -65,17 +65,13 @@ export default function Skill() {
 
   return (
     <main id='skill' className="grid content-center justify-items-center w-full overflow-hidden px-4 sm:px-8 md:px-16 py-1">
-      <div role="textbox" className="grid content-center justify-items-start w-full max-w-2xl">
-        <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px] mb-2">
-          What I have mastered so far
-        </p>
-        <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] mb-6">
-          Skills
-        </h2>
+      <div role="textbox" className="grid content-center justify-items-start w-full max-w-4xl">
+        <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px] mb-2">What I have mastered so far</p>
+        <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] mb-6">Skills</h2>
       </div>
       
       <section 
-        className="overflow-visible grid content-center justify-items-start border-[2px] border-white rounded-md w-full max-w-2xl bg-black/20 backdrop-blur-sm"
+        className="overflow-visible grid content-center justify-items-start border-[2px] border-white rounded-md w-full max-w-4xl bg-black/20 backdrop-blur-sm"
         style={{boxShadow:'0 0 5px #ffffff'}}
       >
         {/* Skills Marquee */}

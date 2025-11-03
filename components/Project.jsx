@@ -335,14 +335,7 @@ const ExpandedProjectCard = memo(({ project, closeExpanded }) => {
   }, [project.projCategory]);
 
   return (
-    <motion.div 
-      layout 
-      className="w-full bg-black bg-opacity-95 border-2 border-white rounded-3xl text-white py-8 px-3" 
-      style={{ position: "relative", top: 0, left: 0, zIndex: 100 }}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+    <motion.div  layout  className="w-full bg-black bg-opacity-95 border-2 border-white rounded-3xl text-white py-8 px-3"  style={{ position: "relative", top: 0, left: 0, zIndex: 100 }} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
       <header className="mb-6 border-b pb-4 border-gray-300 w-full grid content-center justify-items-center xl:flex xl:items-center xl:justify-between px-3">
         <article className="w-full grid content-between gap-2 justify-items-start">
           <h1 className="text-3xl font-bold w-full">{project.projTitle}</h1>
@@ -350,44 +343,21 @@ const ExpandedProjectCard = memo(({ project, closeExpanded }) => {
           <span className="flex flex-wrap gap-1 mb-2">{categories}</span>      
         </article>
         <article className="flex items-center w-full justify-center xl:justify-end gap-10">
-          <span className="text-[15px] text-white font-bold" style={{textShadow:'0 0 5px #000000'}}>
-            Appreciations:{project.projLikesCount} <i className="fas fa-clover text-indigo-600 hover:scale-[1.2] duration-300 transition-transform cursor-pointer active:text-white"></i>
-          </span>
+          <span className="text-[15px] text-white font-bold" style={{textShadow:'0 0 5px #000000'}}>Appreciations:{project.projLikesCount} <i className="fas fa-clover text-indigo-600 hover:scale-[1.2] duration-300 transition-transform cursor-pointer active:text-white"></i></span>
           <div className="flex w-max h-16 gap-3 p-3 border-2 border-white rounded-3xl">
             {project.projLiveDemoLink && (
               <div className='bigLinksDiv grid content-center justify-items-center hover:scale-[1.1] transition-all duration-300'>
                 <span className="linkText absolute hidden -translate-y-7 bg-indigo-700 p-1 opacity-100 text-white w-max h-max rounded-2xl text-[11px]">Live Demo</span>
-                <a 
-                  href={project.projLiveDemoLink} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:opacity-60" 
-                  style={{boxShadow:'0 0 5px #8c86ff'}}
-                >
-                  <i className="fas fa-link"></i>
-                </a>
+                <a  href={project.projLiveDemoLink}  target="_blank"  rel="noopener noreferrer"  className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:opacity-60"  style={{boxShadow:'0 0 5px #8c86ff'}}><i className="fas fa-link"></i></a>
               </div>
             )}
             {project.projSourceCodeLink && (
               <div className='bigLinksDiv grid content-center justify-items-center linkDiv hover:scale-[1.1] transition-all duration-300'>
                 <span className="linkText absolute hidden -translate-y-7 bg-gray-200 p-1 text-black w-max h-max rounded-2xl text-[11px]">Source Code</span>
-                <a 
-                  href={project.projSourceCodeLink} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="bg-white hover:opacity-70 text-black w-10 h-10 flex items-center justify-center p-1 rounded-full" 
-                  style={{boxShadow:'0 0 5px #ffffff'}}
-                >
-                  <i className="fas fa-link"></i>
-                </a>
+                <a  href={project.projSourceCodeLink}  target="_blank"  rel="noopener noreferrer"  className="bg-white hover:opacity-70 text-black w-10 h-10 flex items-center justify-center p-1 rounded-full"  style={{boxShadow:'0 0 5px #ffffff'}}><i className="fas fa-link"></i></a>
               </div>
             )}
-            <button 
-              onClick={closeExpanded}
-              className="bg-white hover:bg-gray-400 w-max px-10 rounded-3xl cursor-pointer text-[13px] text-black hover:text-red-700 py-2 hover:mx-5 transition-all duration-300" 
-              style={{boxShadow:'0 0 5px #ffffff'}}
-            >
-              See Less
+            <button  onClick={closeExpanded} className="bg-white hover:bg-gray-400 w-max px-10 rounded-3xl cursor-pointer text-[13px] text-black hover:text-red-700 py-2 hover:mx-5 transition-all duration-300"  style={{boxShadow:'0 0 5px #ffffff'}}>See Less
             </button>
           </div>
         </article>
@@ -396,9 +366,7 @@ const ExpandedProjectCard = memo(({ project, closeExpanded }) => {
       <article className="mb-2 grid content-center justify-items-center gap-10">
         <div className="w-full h-max flex items-center justify-start gap-5">
           <p className="font-bold w-[200px] flex flex-nowrap">Tech Stack used: </p>
-          <ul className="flex items-center justify-center gap-2 flex-wrap h-full w-full">
-            {techStack}
-          </ul>
+          <ul className="flex items-center justify-center gap-2 flex-wrap h-full w-full">{techStack}</ul>
         </div>
         <p className="bg-white text-black p-3 w-full text-lg rounded-sm">{project.projDescription}</p>
       </article>
@@ -412,37 +380,17 @@ const ExpandedProjectCard = memo(({ project, closeExpanded }) => {
           {project.projLiveDemoLink && (
             <div className='bigLinksDiv grid content-center justify-items-center hover:scale-[1.1] transition-all duration-300'>
               <span className="linkText absolute hidden -translate-y-7 bg-indigo-700 p-1 opacity-100 text-white w-max h-max rounded-2xl text-[11px]">Live Demo</span>
-              <a 
-                href={project.projLiveDemoLink} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:opacity-60" 
-                style={{boxShadow:'0 0 5px #8c86ff'}}
-              >
-                <i className="fas fa-link"></i>
+              <a  href={project.projLiveDemoLink}  target="_blank"  rel="noopener noreferrer"  className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:opacity-60"  style={{boxShadow:'0 0 5px #8c86ff'}}><i className="fas fa-link"></i>
               </a>
             </div>
           )}
           {project.projSourceCodeLink && (
             <div className='bigLinksDiv grid content-center justify-items-center linkDiv hover:scale-[1.1] transition-all duration-300'>
               <span className="linkText absolute hidden -translate-y-7 bg-gray-200 p-1 text-black w-max h-max rounded-2xl text-[11px]">Source Code</span>
-              <a 
-                href={project.projSourceCodeLink} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="bg-white hover:opacity-70 text-black w-10 h-10 flex items-center justify-center p-1 rounded-full" 
-                style={{boxShadow:'0 0 5px #ffffff'}}
-              >
-                <i className="fas fa-link"></i>
-              </a>
+              <a  href={project.projSourceCodeLink}  target="_blank"  rel="noopener noreferrer"  className="bg-white hover:opacity-70 text-black w-10 h-10 flex items-center justify-center p-1 rounded-full"  style={{boxShadow:'0 0 5px #ffffff'}}><i className="fas fa-link"></i></a>
             </div>
           )}
-          <button 
-            onClick={closeExpanded}
-            className="bg-white w-full hover:bg-gray-400 px-10 rounded-3xl cursor-pointer hover:mx-5 text-[13px] text-black hover:text-red-700 py-2" 
-            style={{boxShadow:'0 0 5px #ffffff'}}
-          >
-            See Less
+          <button  onClick={closeExpanded} className="bg-white w-full hover:bg-gray-400 px-10 rounded-3xl cursor-pointer hover:mx-5 text-[13px] text-black hover:text-red-700 py-2"  style={{boxShadow:'0 0 5px #ffffff'}}>See Less
           </button>
         </div>
       </footer>
@@ -628,24 +576,13 @@ const Project = () => {
   ]);
 
   return (
-    <section  
-      id="project"  
-      className="relative px-16 w-full flex flex-col items-center justify-center mb-5 overflow-visible" 
-      style={{ userSelect: "none" }}
-    >
-      <div role="textbox" className="grid content-center justify-items-start w-full">
-        <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]">
-          What I have done so far
-        </p>
-        <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px]">
-          Recently Projects
-        </h2>
+    <section   id="project"  className="relative px-5 sm:px-8 md:px-16 w-full flex flex-col items-center justify-center mb-5 overflow-visible"  style={{ userSelect: "none" }}>
+      <div role="textbox" className="grid content-center justify-items-start w-full max-w-4xl">
+        <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]">What I have done so far</p>
+        <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px]">Recently Projects</h2>
       </div>
       
-      {projects.length === 0 && (
-        <p className="text-gray-500">No projects available</p>
-      )}
-      
+      {projects.length === 0 && (<p className="text-gray-500">No projects available</p>)}
       {mainContent}
     </section>
   );

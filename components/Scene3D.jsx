@@ -8,23 +8,23 @@ import * as THREE from 'three';
 const SECTION_CONFIG = Object.freeze({
   hero: Object.freeze({
     position: [0, -0.5, 0],
-    positionLg: [2.3, -0.2, 0],
+    positionLg: [1.5, -0.2, 0],
     rotation: [0, 0, 0],
     scale: 11,
     scaleLg: 20,
   }),
   about: Object.freeze({
-    position: [1, 0.5, 0],
-    positionMd: [0.5, 0.2, 3],
-    positionLg: [1.25, 0.2, 0],
+    position: [0.5, 0, 0],
+    positionMd: [0.5,-0.2, 3],
+    positionLg: [1.25, -0.5, 0],
     rotation: [0, 3, 0],
     scale: 1,
   }),
   skill: Object.freeze({
-    position: [0, 0.15, 0],
-    positionLg: [0,-0.3, 0],
-    rotation: [0, 6, 0],
-    scale: 7,
+    position: [0, 0.45, 0],
+    positionMd:[0, 0, 0],
+    rotation: [0, 7, 0],
+    scale: 6,
   }),
   project: Object.freeze({
     position: [0, -0.5, 0],

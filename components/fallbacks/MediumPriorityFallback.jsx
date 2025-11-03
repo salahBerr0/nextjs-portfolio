@@ -1,7 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
-import useComponentRetry from '@/hooks/useComponentRetry';
+import { memo, useCallback, useMemo, useState, useEffect } from 'react';
 
 // Memoized SVG components
 const WarningIcon = memo(() => (<svg className="w-10 h-10 text-purple-400 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>));
@@ -15,10 +14,28 @@ LoadingSpinner.displayName = 'LoadingSpinner';
 
 // Main component
 const MediumPriorityFallback = memo(
-    function MediumPriorityFallback({ componentName, onRetry }) {
-        const { isRetrying, retry } = useComponentRetry(onRetry);
-        const reloadPage = useCallback(() => {window.location.reload();}, []);
-        // Memoized content - optimized dependency array
+    function MediumPriorityFallback({ componentName, onRetry, isRetrying }) {
+        const [retryAttempted, setRetryAttempted] = useState(false);
+        const [retryCount, setRetryCount] = useState(0);
+        
+        const reloadPage = useCallback(() => {
+            window.location.reload();
+        }, []);
+
+        // Handle retry with proper state management
+        const handleRetry = useCallback(async () => {
+            setRetryAttempted(true);
+            setRetryCount(prev => prev + 1);
+            
+            try {
+                await onRetry();
+                // If retry succeeds, the component will unmount
+            } catch (error) {
+                console.error(`Retry failed for ${componentName}:`, error);
+            }
+        }, [onRetry, componentName]);
+
+        // Memoized content
         const retryButtonContent = useMemo(() => {
             if (isRetrying) {
                 return (
@@ -26,54 +43,79 @@ const MediumPriorityFallback = memo(
                         <LoadingSpinner />Retrying...
                     </div>
                 );
-                }
-                return (
+            }
+            return (
                 <span className="flex items-center gap-2">
-                    <RefreshIcon />Retry {componentName}
+                    <RefreshIcon />
+                    {retryAttempted ? `Try Again ${retryCount > 1 ? `(${retryCount})` : ''}` : `Retry ${componentName}`}
                 </span>
-                );
-        }, [isRetrying, componentName]);
+            );
+        }, [isRetrying, componentName, retryAttempted, retryCount]);
 
-  // Memoized class strings
-  const classNames = useMemo(() => ({
-    mainButton: [
-      "relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl",
-      "text-sm font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300",
-      "shadow-2xl hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed group"
-    ].join(' '),
-    secondaryButton: [
-      "border border-gray-600 text-gray-300 px-6 py-3 rounded-xl",
-      "text-sm font-medium hover:bg-gray-800/50 hover:border-gray-500 transition-all duration-300"
-    ].join(' '),
-  }), []);
+        // Memoized class strings
+        const classNames = useMemo(() => ({
+            mainButton: [
+                "relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl",
+                "text-sm font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300",
+                "shadow-2xl hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed group"
+            ].join(' '),
+            secondaryButton: [
+                "border border-gray-600 text-gray-300 px-6 py-3 rounded-xl",
+                "text-sm font-medium hover:bg-gray-800/50 hover:border-gray-500 transition-all duration-300"
+            ].join(' '),
+        }), []);
 
-  // Memoized text content to prevent string recreation
-  const textContent = useMemo(() => ({
-    title: `${componentName} Loading Issue`,
-    footer: "If the issue persists, please try again later"
-  }), [componentName]);
+        // Memoized text content
+        const textContent = useMemo(() => {
+            if (retryAttempted && !isRetrying) {
+                return {
+                    title: `Still Having Issues with ${componentName}`,
+                    footer: retryCount > 1 
+                        ? `Tried ${retryCount} times. You can try again or refresh the page.`
+                        : "The retry didn't resolve the issue. You can try again or refresh the page."
+                };
+            }
+            return {
+                title: `${componentName} Loading Issue`,
+                footer: "If the issue persists, please try again later"
+            };
+        }, [componentName, retryAttempted, isRetrying, retryCount]);
 
-  return (
-    <main role="alert" aria-live="polite" aria-busy={isRetrying} className='p-8 m-3 border border-gray-700/50 bg-gray-900/80 backdrop-blur-lg rounded-2xl text-center animate-fade-in'>
-        <article role='' className="relative p-2 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 animate-pulse">
-            <WarningIcon />
-            <h3 className="text-gray-100 font-bold text-[22px]">{textContent.title}</h3>
-        </article>
-      
-        <article className='grid content-center justify-items-center h-max w-full text-gray-400 mb-2'>
-            <span>We're experiencing difficulties loading the section.</span>
-            <span>This is usually temporary and can be resolved by retrying.</span>
-        </article>
+        return (
+            <main role="alert" aria-live="polite" aria-busy={isRetrying} className='p-8 m-3 border border-gray-700/50 bg-gray-900/80 backdrop-blur-lg rounded-2xl text-center animate-fade-in'>
+                <article role='' className="relative p-2 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 animate-pulse">
+                    <WarningIcon />
+                    <h3 className="text-gray-100 font-bold text-[22px]">{textContent.title}</h3>
+                </article>
+              
+                <article className='grid content-center justify-items-center h-max w-full text-gray-400 mb-2'>
+                    <span>We're experiencing difficulties loading the section.</span>
+                    <span>This is usually temporary and can be resolved by retrying.</span>
+                </article>
 
-        <article className="flex gap-4 justify-center items-center flex-wrap">
-            <button onClick={retry} disabled={isRetrying} className={classNames.mainButton} aria-label={`Retry loading ${componentName}`} aria-describedby="retry-description">{retryButtonContent}</button>
-            <button onClick={reloadPage} disabled={isRetrying} className={classNames.secondaryButton} aria-label="Refresh entire page">Full Refresh</button>
-        </article>
-      
-        <span className="text-gray-500 text-xs mt-6">{textContent.footer}</span>
-    </main>
-  );
-});
+                <article className="flex gap-4 justify-center items-center flex-wrap">
+                    <button 
+                        onClick={handleRetry} 
+                        disabled={isRetrying} 
+                        className={classNames.mainButton} 
+                        aria-label={`Retry loading ${componentName}`}
+                    >
+                        {retryButtonContent}
+                    </button>
+                    <button 
+                        onClick={reloadPage} 
+                        className={classNames.secondaryButton} 
+                        aria-label="Refresh entire page"
+                    >
+                        Full Refresh
+                    </button>
+                </article>
+              
+                <span className="text-gray-500 text-xs mt-6">{textContent.footer}</span>
+            </main>
+        );
+    }
+);
 
 MediumPriorityFallback.displayName = 'MediumPriorityFallback';
 
