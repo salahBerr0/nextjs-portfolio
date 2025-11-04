@@ -1,17 +1,17 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import dynamic from "next/dynamic";
-import PreloadResources from "@/components/PreloadResources";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import PreloadResources from "@/components/layout/PreloadResources";
+import ErrorBoundary from "@/components/fallbacks/ErrorBoundary";
 import CriticalFallback from "@/components/fallbacks/CriticalFallback";
 import HighPriorityFallback from "@/components/fallbacks/HighPriorityFallback";
 import LowPriorityFallback from "@/components/fallbacks/LowPriorityFallback";
 import BgFallback from "@/components/fallbacks/BgFallback";
 
-const Footer = dynamic(() => import('@/components/Footer'), {loading: () => (<section className="w-full h-32 flex items-center justify-center border-t"><div className="animate-pulse text-gray-500">Loading footer...</div></section>),});
-const Backgrounds = dynamic(() => import('@/components/Backgrounds'), {loading: () => <div className="fixed inset-0 bg-black" />,});
+const Footer = dynamic(() => import('@/components/layout/Footer'), {loading: () => (<section className="w-full h-32 flex items-center justify-center border-t"><div className="animate-pulse text-gray-500">Loading footer...</div></section>),});
+const Backgrounds = dynamic(() => import('@/components/backgrounds/Backgrounds'), {loading: () => <div className="fixed inset-0 bg-black" />,});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

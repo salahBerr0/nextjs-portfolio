@@ -1,12 +1,10 @@
 import dynamic from "next/dynamic";
-const Hero = dynamic(() => import("@/components/Hero"));
-const About = dynamic(() => import("@/components/About"));
-const Skill = dynamic(() => import("@/components/Skill"));
-const Project = dynamic(() => import("@/components/Project"));
-const Experience = dynamic(() => import("@/components/Experience"));
-import ErrorBoundary from "@/components/ErrorBoundary";
-import CriticalFallback from "@/components/fallbacks/CriticalFallback";
-import HighPriorityFallback from "@/components/fallbacks/HighPriorityFallback";
+const Hero = dynamic(() => import("@/components/sections/Hero"));
+const About = dynamic(() => import("@/components/sections/About"));
+const Skill = dynamic(() => import("@/components/sections/Skill"));
+const Project = dynamic(() => import("@/components/project/Project"));
+const Experience = dynamic(() => import("@/components/sections/Experience"));
+import ErrorBoundary from "@/components/fallbacks/ErrorBoundary";
 import MediumPriorityFallback from "@/components/fallbacks/MediumPriorityFallback";
 export default function Home() {
   return (

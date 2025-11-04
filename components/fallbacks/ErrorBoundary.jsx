@@ -2,7 +2,6 @@
 
 import { Component } from 'react';
 import React from 'react'; // Add this import
-
 export default class ErrorBoundary extends Component {
   state = { 
     hasError: false, 
