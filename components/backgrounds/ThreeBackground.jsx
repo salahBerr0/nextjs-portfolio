@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Preload } from '@react-three/drei';
 import Scene3D from './Scene3D';
+import usePerformanceMonitor from '@/hooks/usePerformanceMonitor';
 
 // High-performance throttle with RAF
 function throttleRAF(func) {
@@ -17,25 +18,41 @@ function throttleRAF(func) {
   };
 }
 
+// Memoized constants
+const SECTIONS = ['hero', 'about', 'skill', 'project', 'experience'];
+
 export default function ThreeBackground() {
+// In ThreeBackground.jsx, update the hook call:
+usePerformanceMonitor('ThreeBackground', { 
+  warnThreshold: 50, 
+  errorThreshold: 100,
+  preventDuplicates: true 
+});
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [isClient, setIsClient] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const scrollRef = useRef(0);
   const sectionDataRef = useRef({ heights: [], total: 0 });
   const rafRef = useRef();
 
-  // Client-side detection
+  // Single client-side detection with ready state
   useEffect(() => {
-    setIsClient(true);
+    setIsReady(true);
+    
+    // Small delay to prioritize main content
+    const timer = setTimeout(() => {
+      calculateSectionData();
+      updateScrollPosition();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Memoized section calculation
   const calculateSectionData = useCallback(() => {
-    const sections = ['hero', 'about', 'skill', 'project', 'experience'];
     const heights = [];
     let totalHeight = 0;
 
-    sections.forEach(sectionId => {
+    SECTIONS.forEach(sectionId => {
       const element = document.getElementById(sectionId);
       if (element) {
         const height = element.offsetHeight;
@@ -54,15 +71,17 @@ export default function ThreeBackground() {
 
   // Optimized scroll position calculation
   const updateScrollPosition = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const { heights, total } = sectionDataRef.current;
+    const { heights } = sectionDataRef.current;
     
     if (!heights.length) {
       scrollRef.current = 0;
       return;
     }
 
-    // Binary search for current section (more efficient for many sections)
+    // Binary search for current section
     let left = 0;
     let right = heights.length - 1;
     let currentIndex = 0;
@@ -105,13 +124,12 @@ export default function ThreeBackground() {
     handleScroll();
   }), [updateScrollPosition, handleScroll]);
 
-  // Main effect setup
-  useEffect(() => {
-    if (!isClient) return;
+  // Memoized scroll position to prevent unnecessary re-renders
+  const memoizedScrollProgress = useMemo(() => scrollProgress, [scrollProgress]);
 
-    // Initial setup
-    calculateSectionData();
-    updateScrollPosition();
+  // Main effect setup - only run when ready
+  useEffect(() => {
+    if (!isReady) return;
 
     // Event listeners with passive for performance
     window.addEventListener('scroll', throttledScroll, { passive: true });
@@ -130,7 +148,7 @@ export default function ThreeBackground() {
     );
 
     // Observe all sections
-    ['hero', 'about', 'skill', 'project', 'experience'].forEach(id => {
+    SECTIONS.forEach(id => {
       const element = document.getElementById(id);
       if (element) observer.observe(element);
     });
@@ -143,25 +161,11 @@ export default function ThreeBackground() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [isClient, calculateSectionData, updateScrollPosition, throttledScroll]);
+  }, [isReady, calculateSectionData, updateScrollPosition, throttledScroll]);
 
-  // Performance monitoring
-  useEffect(() => {
-    if (!isClient) return;
-    
-    const startTime = performance.now();
-    const timer = setTimeout(() => {
-      const loadTime = performance.now() - startTime;
-      if (loadTime > 1000) {
-        console.warn(`3D Scene loaded in ${loadTime.toFixed(0)}ms - Consider optimization`);
-      }
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [isClient]);
-
-  if (!isClient) {
-    return <div className="fixed inset-0 -z-10 bg-black" />;
+  // Return simple background until ready to avoid flash
+  if (!isReady) {
+    return <div className="fixed inset-0 -z-10 bg-gray-700" />;
   }
 
   return (
@@ -180,14 +184,14 @@ export default function ThreeBackground() {
           stencil: false,
           depth: true
         }}
-        dpr={Math.min(window.devicePixelRatio, 1.5)}
-        performance={{ min: 0.8 }}
-        frameloop="always"
+        dpr={Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)}
+        performance={{ min: 0.5 }} // More aggressive performance
+        frameloop="demand"
         style={{ 
           background: 'transparent',
         }}
       >
-        <Scene3D scrollPosition={scrollProgress} />
+        <Scene3D scrollPosition={memoizedScrollProgress} />
         <Preload all />
       </Canvas>
     </div>

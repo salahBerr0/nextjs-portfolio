@@ -40,17 +40,14 @@ const useVideoPlayer = (videoRef, shouldPlay) => {
 
   // Memoized event handlers
   const handleCanPlay = useCallback(() => {
-    console.log("Video can play");
     setVideoState(prev => ({ ...prev, isLoaded: true }));
   }, []);
 
   const handleError = useCallback(() => {
-    console.error("Video failed to load");
     setVideoState(prev => ({ ...prev, hasError: true }));
   }, []);
 
   const handlePlaying = useCallback(() => {
-    console.log("Video is now playing");
     setVideoState(prev => ({ ...prev, isPlaying: true }));
   }, []);
 
@@ -96,7 +93,6 @@ const useVideoPlayer = (videoRef, shouldPlay) => {
           video.currentTime = 0;
         }
       } catch (error) {
-        console.error("Video playback failed:", error);
         setVideoState(prev => ({ ...prev, hasError: true }));
       }
     };
@@ -199,7 +195,7 @@ export default function About() {
   const [aboutSectionRef, isInView] = useIntersectionObserver(0.5, '0px');
 
   const handleVideoError = useCallback(() => {
-    console.error("Video failed to load");
+    // Video error handling without console.log
   }, []);
 
   // Memoize languages list to prevent unnecessary re-renders
