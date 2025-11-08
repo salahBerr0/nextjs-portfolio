@@ -1,7 +1,7 @@
 'use client';
 
 import { Component } from 'react';
-import React from 'react'; // Add this import
+import React from 'react';
 export default class ErrorBoundary extends Component {
   state = { 
     hasError: false, 

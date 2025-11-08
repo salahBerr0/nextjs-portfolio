@@ -1,9 +1,10 @@
 import { Tools } from "@/data/Tools";
 import { Projects } from "@/data/Projects";
-import ProjectClient from "./Project.client";
+import dynamic from "next/dynamic";
+
+const ProjectClient = dynamic(() => import("./Project.client"), { ssr: false });
 
 export default function Project() {
-  // Pre-process data on the server
   const projectsData = Projects.map(project => ({
     _id: project._id,
     projTitle: project.projTitle,
@@ -27,8 +28,8 @@ export default function Project() {
   }, {});
 
   return (
-    <section 
-      id="project" 
+    <section
+      id="project"
       className="relative px-5 sm:px-8 md:px-16 w-full flex flex-col items-center justify-center mb-5 overflow-visible"
       style={{ userSelect: "none" }}
     >
@@ -40,14 +41,11 @@ export default function Project() {
           Recently Projects
         </h2>
       </div>
-      
+
       {projectsData.length === 0 ? (
         <p className="text-gray-500">No projects available</p>
       ) : (
-        <ProjectClient 
-          projects={projectsData} 
-          toolsMap={toolsMap} 
-        />
+        <ProjectClient projects={projectsData} toolsMap={toolsMap} />
       )}
     </section>
   );

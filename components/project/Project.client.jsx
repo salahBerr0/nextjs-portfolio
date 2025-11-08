@@ -1,48 +1,34 @@
 "use client";
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
-import ExpandedProjectCard from "./ExpandedProjectCard";
-import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
+const ExpandedProjectCard = lazy(() => import("./ExpandedProjectCard"));
 
 const ProjectClient = ({ projects, toolsMap }) => {
   const [positions, setPositions] = useState({});
   const [draggedId, setDraggedId] = useState(null);
   const [expandedProjectId, setExpandedProjectId] = useState(null);
-  
-  const expandedIndex = useMemo(() => 
-    projects.findIndex((p) => p._id === expandedProjectId),
+  const [visibleCount, setVisibleCount] = useState(5);
+
+  const expandedIndex = useMemo(
+    () => projects.findIndex((p) => p._id === expandedProjectId),
     [projects, expandedProjectId]
   );
 
-  useEffect(() => {
-    const projectIds = new Set(projects.map(p => p._id));
-    setPositions(prev => {
-      const newPositions = { ...prev };
-      Object.keys(newPositions).forEach(id => {
-        if (!projectIds.has(id)) {
-          delete newPositions[id];
-        }
-      });
-      return newPositions;
-    });
-  }, [projects]);
+  const loadMoreProjects = useCallback(() => {
+    setVisibleCount((c) => Math.min(c + 5, projects.length));
+  }, [projects.length]);
 
-  // Debounced card movement for better performance
-  const debouncedCardMove = useDebouncedCallback((id, data) => {
-    setPositions(pos => ({
+  const onCardMove = useCallback((id, data) => {
+    setPositions((pos) => ({
       ...pos,
       [id]: { 
         x: data.offset.x, 
         y: data.offset.y, 
-        rotate: data.transform?.rotate || 0 
+        rotate: data.transform?.rotate || 0
       },
     }));
-  }, 16);
-
-  const onCardMove = useCallback((id, data) => {
-    debouncedCardMove(id, data);
-  }, [debouncedCardMove]);
+  }, []);
 
   const onDragStart = useCallback((id) => {
     setDraggedId(id);
@@ -60,126 +46,96 @@ const ProjectClient = ({ projects, toolsMap }) => {
     setExpandedProjectId(null);
   }, []);
 
-  const setExpandedProjectIdCallback = useCallback((id) => {
-    setExpandedProjectId(id);
-  }, []);
-
-  const mainContent = useMemo(() => {
-    if (expandedIndex !== -1) {
-      const beforeProjects = projects.slice(0, expandedIndex);
-      const afterProjects = projects.slice(expandedIndex + 1);
-
-      return (
+  return (
+    <>
+      {expandedIndex !== -1 ? (
         <>
           <div className="projCardsMere flex flex-wrap items-center justify-center gap-6 w-full mb-6 overflow-hidden">
-            {beforeProjects.map((project) => {
+            {projects.slice(0, expandedIndex).map((project) => {
               const pos = positions[project._id] || { x: 0, y: 0, rotate: 0 };
               const isDragged = draggedId === project._id;
               return (
-                <motion.div 
-                  key={project._id}  
-                  layout 
-                  transition={{ duration: 0.5, type: "spring" }} 
-                  className="w-[400px]"
-                >
-                  <ProjectCard  
-                    project={project}  
-                    pos={pos}  
-                    isDragged={isDragged}  
-                    onCardMove={onCardMove}  
-                    onDragStart={onDragStart}  
-                    onDragEnd={onDragEnd}  
-                    onSwipe={onSwipe}  
-                    setExpandedProjectId={setExpandedProjectIdCallback} 
+                <motion.div key={project._id} layout transition={{ duration: 0.5, type: "spring" }} className="w-[400px]">
+                  <ProjectCard
+                    project={project}
+                    pos={pos}
+                    isDragged={isDragged}
+                    onCardMove={onCardMove}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    onSwipe={onSwipe}
+                    setExpandedProjectId={setExpandedProjectId}
                   />
                 </motion.div>
               );
             })}
           </div>
 
-          <motion.div 
-            layout 
-            transition={{ duration: 0.5, type: "spring" }}
-            className="w-full mb-6"
-          >
-            <ExpandedProjectCard 
-              project={projects[expandedIndex]} 
+          <Suspense fallback={<div className="text-white text-center py-10">Loading project...</div>}>
+            <ExpandedProjectCard
+              project={projects[expandedIndex]}
               toolsMap={toolsMap}
               closeExpanded={closeExpanded}
             />
-          </motion.div>
+          </Suspense>
 
           <div className="flex flex-wrap items-center justify-center gap-6 w-full mb-6 overflow-hidden">
-            {afterProjects.map((project) => {
+            {projects.slice(expandedIndex + 1, visibleCount).map((project) => {
               const pos = positions[project._id] || { x: 0, y: 0, rotate: 0 };
               const isDragged = draggedId === project._id;
               return (
-                <motion.div 
-                  key={project._id} 
-                  layout 
-                  transition={{ duration: 0.5, type: "spring" }}
-                  className="w-[400px]"
-                >
-                  <ProjectCard  
-                    project={project} 
-                    pos={pos} 
-                    isDragged={isDragged} 
-                    onCardMove={onCardMove} 
-                    onDragStart={onDragStart} 
-                    onDragEnd={onDragEnd} 
-                    onSwipe={onSwipe} 
-                    setExpandedProjectId={setExpandedProjectIdCallback}
+                <motion.div key={project._id} layout transition={{ duration: 0.5, type: "spring" }} className="w-[400px]">
+                  <ProjectCard
+                    project={project}
+                    pos={pos}
+                    isDragged={isDragged}
+                    onCardMove={onCardMove}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    onSwipe={onSwipe}
+                    setExpandedProjectId={setExpandedProjectId}
                   />
                 </motion.div>
               );
             })}
           </div>
+          {visibleCount < projects.length && (
+            <button onClick={loadMoreProjects} className="px-6 py-3 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              Load More Projects
+            </button>
+          )}
         </>
-      );
-    }
-
-    // No project expanded - show all projects
-    return (
-      <div className="flex flex-wrap items-center justify-center gap-6 w-full overflow-visible">
-        {projects.map((project) => {
-          const pos = positions[project._id] || { x: 0, y: 0, rotate: 0 };
-          const isDragged = draggedId === project._id;
-          return (
-            <motion.div 
-              key={project._id} 
-              layout 
-              transition={{ duration: 0.5, type: "spring" }}
-              className="w-[400px]"
-            >
-              <ProjectCard 
-                project={project} 
-                pos={pos} 
-                isDragged={isDragged} 
-                onCardMove={onCardMove} 
-                onDragStart={onDragStart} 
-                onDragEnd={onDragEnd} 
-                onSwipe={onSwipe} 
-                setExpandedProjectId={setExpandedProjectIdCallback}
-              />
-            </motion.div>
-          );
-        })}
-      </div>
-    );
-  }, [
-    expandedIndex, 
-    projects, 
-    positions, 
-    draggedId, 
-    onCardMove, 
-    onDragStart, 
-    onDragEnd, 
-    onSwipe, 
-    closeExpanded, 
-    setExpandedProjectIdCallback
-  ]);
-
-  return mainContent;
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-center gap-6 w-full overflow-visible">
+            {projects.slice(0, visibleCount).map((project) => {
+              const pos = positions[project._id] || { x: 0, y: 0, rotate: 0 };
+              const isDragged = draggedId === project._id;
+              return (
+                <motion.div key={project._id} layout transition={{ duration: 0.5, type: "spring" }} className="w-[400px]">
+                  <ProjectCard
+                    project={project}
+                    pos={pos}
+                    isDragged={isDragged}
+                    onCardMove={onCardMove}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    onSwipe={onSwipe}
+                    setExpandedProjectId={setExpandedProjectId}
+                  />
+                </motion.div>
+              );
+            })}
+          </div>
+          {visibleCount < projects.length && (
+            <button onClick={loadMoreProjects} className="px-6 py-3 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              Load More Projects
+            </button>
+          )}
+        </>
+      )}
+    </>
+  );
 };
 
 export default ProjectClient;

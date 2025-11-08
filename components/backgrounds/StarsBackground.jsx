@@ -76,9 +76,7 @@ const particlesInit = useCallback(async (engine) => {
           easing: "ease-out-quad"
         },
         push: {
-          speed:1,
-          factor:1,
-          quantity: 4,
+          quantity: 1,
         }
       }
     },
@@ -102,7 +100,7 @@ const particlesInit = useCallback(async (engine) => {
         }
       },
       number: {
-        value: 80, // More particles for richer background
+        value: 80,
         density: {
           enable: true,
           area: 800
@@ -111,7 +109,7 @@ const particlesInit = useCallback(async (engine) => {
       opacity: {
         value: { 
           min: 0.1, 
-          max: 0.6 // Higher opacity for better visibility
+          max: 0.6
         },
         animation: {
           enable: true,

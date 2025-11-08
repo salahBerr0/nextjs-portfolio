@@ -93,7 +93,7 @@ const processTimelineData = () => {
     .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
 };
 
-export default async function Experience() {
+export default  function Experience() {
     const timelineEntries = processTimelineData();
 
   return (

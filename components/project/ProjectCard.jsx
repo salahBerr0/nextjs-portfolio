@@ -50,48 +50,64 @@ const ProjectCard = memo(({ project, pos, isDragged, onCardMove, onDragStart, on
   }, [project._id, setExpandedProjectId]);
 
   return (
-    <TinderCard   onSwipe={handleSwipe}   preventSwipe={["up", "down"]}   flickOnSwipe={false}    onDrag={handleDrag}  onDragStart={handleDragStart}    onDragEnd={onDragEnd}    className="cursor-grab">
-      <motion.div  className="w-full overflow-hidden h-[500px] relative py-[4px] shadow-xl bg-cover bg-center text-white flex flex-col rounded-lg" animate={!isDragged ? { x: [0, 5, -5, 5, 0], y: [0, -5, -5, 5, 0] } : {}} transition={{ duration: 1.5, repeat: !isDragged ? Infinity : 0, ease: "easeInOut" }} style={{ userSelect: "none", transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)`, transition: isDragged ? "none" : "transform 0.3s ease", backgroundImage: backgroundImage, backgroundRepeat: "no-repeat", backgroundSize: "cover", boxShadow: "0 12px 24px rgba(0,0,0,0.3)", willChange: isDragged ? 'transform' : 'auto',}}>
+    <TinderCard onSwipe={handleSwipe} preventSwipe={["up", "down"]} flickOnSwipe={false} onDrag={handleDrag} onDragStart={handleDragStart} onDragEnd={onDragEnd} className="cursor-grab">
+      <motion.div
+        className="w-full overflow-hidden h-[500px] relative py-[4px] shadow-xl bg-cover bg-center text-white flex flex-col rounded-lg"
+        animate={!isDragged ? { x: [0, 5, -5, 5, 0], y: [0, -5, -5, 5, 0] } : {}}
+        transition={{ duration: 1.5, repeat: !isDragged ? Infinity : 0, ease: "easeInOut" }}
+        style={{
+          userSelect: "none",
+          transform: `translateX(${pos.x}px) translateY(${pos.y}px) rotate(${pos.rotate}deg)`,
+          transition: isDragged ? "none" : "transform 0.3s ease",
+          backgroundImage,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          boxShadow: "0 12px 24px rgba(0,0,0,0.3)",
+          willChange: isDragged ? "transform" : "auto",
+        }}
+      >
         <article className="projectCard hover:bg-black/80 rounded-lg transition-all duration-300 bg-black/50 overflow-hidden p-5 border-[2px] w-full h-[400px] flex-grow flex flex-col justify-between">
-            <div className="grid content-center justify-items-start gap-2">
-                <h3 className="text-2xl text-start font-bold">{project.projTitle}</h3>
-                <span className="flex flex-wrap gap-2">{categories}</span>
-                <span className="text-[20px] mt-4 text-center flex items-center font-bold text-white/80" style={{textShadow:'0 0 5px #000000'}}><i className="fas fa-clover text-[30px] text-center cursor:pointer hover:scale-[1.3] hover:text-indigo-300 transition-all duration-300 active:text-indigo-700"></i>{project.projLikesCount}</span>
-            </div>
-          
-            <span className="dragText transition-all duration-300 text-gray-200 right-36 top-56 absolute text-[22px] bg-black/30 px-1" style={{textShadow:'0 0 5px #fff',boxShadow:'0 0 25px #000000'}}><i className="fas fa-hand text-[20px]"></i>Drag Me</span>
-            <div className="flex gap-3 p-3 border-2 border-white rounded-3xl" style={{boxShadow:'0 0 5px #ffffff'}}>
-                {project.projLiveDemoLink && (
-                <div className='bigLinksDiv grid content-center justify-items-center hover:scale-[1.1] transition-all duration-300'>
-                    <span className="linkText absolute hidden -translate-y-7 bg-indigo-700 p-1 opacity-100 text-white w-max h-max rounded-2xl text-[11px]">Live Demo</span>
-                    <a  href={project.projLiveDemoLink}  target="_blank"  rel="noopener noreferrer"  className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:opacity-60"  style={{boxShadow:'0 0 5px #8c86ff'}}><i className="fas fa-link"></i></a>
-                </div>
-                )}
-            
-            {project.projSourceCodeLink && (
-              <div className='bigLinksDiv grid content-center justify-items-center linkDiv hover:scale-[1.1] transition-all duration-300'>
-                <span className="linkText absolute hidden -translate-y-7 bg-gray-200 p-1 text-black w-max h-max rounded-2xl text-[11px]">Source Code</span>
-                <a  href={project.projSourceCodeLink}  target="_blank"  rel="noopener noreferrer"  className="bg-white hover:opacity-70 text-black w-10 h-10 flex items-center justify-center p-1 rounded-full"  style={{boxShadow:'0 0 5px #ffffff'}}><i className="fas fa-link"></i></a>
+          <div className="grid content-center justify-items-start gap-2">
+            <h3 className="text-2xl text-start font-bold">{project.projTitle}</h3>
+            <span className="flex flex-wrap gap-2">{categories}</span>
+            <span className="text-[20px] mt-4 text-center flex items-center font-bold text-white/80" style={{ textShadow: "0 0 5px #000000" }}>
+              <i className="fas fa-clover text-[30px] text-center cursor:pointer hover:scale-[1.3] hover:text-indigo-300 transition-all duration-300 active:text-indigo-700"></i>
+              {project.projLikesCount}
+            </span>
+          </div>
+
+          <span className="dragText transition-all duration-300 text-gray-200 right-36 top-56 absolute text-[22px] bg-black/30 px-1" style={{ textShadow: "0 0 5px #fff", boxShadow: "0 0 25px #000000" }}>
+            <i className="fas fa-hand text-[20px]"></i>Drag Me
+          </span>
+          <div className="flex gap-3 p-3 border-2 border-white rounded-3xl" style={{ boxShadow: "0 0 5px #ffffff" }}>
+            {project.projLiveDemoLink && (
+              <div className="bigLinksDiv grid content-center justify-items-center hover:scale-[1.1] transition-all duration-300">
+                <span className="linkText absolute hidden -translate-y-7 bg-indigo-700 p-1 opacity-100 text-white w-max h-max rounded-2xl text-[11px]">Live Demo</span>
+                <a href={project.projLiveDemoLink} target="_blank" rel="noopener noreferrer" className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:opacity-60" style={{ boxShadow: "0 0 5px #8c86ff" }}>
+                  <i className="fas fa-link"></i>
+                </a>
               </div>
             )}
-            
-            <button  onClick={handleExpand} className="bg-white w-full h-10 rounded-3xl cursor-pointer text-[13px] text-indigo-950 hover:opacity-70 hover:mx-5 transition-all duration-200"  style={{boxShadow:'0 0 5px #ffffff'}}>See More..</button>
+
+            {project.projSourceCodeLink && (
+              <div className="bigLinksDiv grid content-center justify-items-center linkDiv hover:scale-[1.1] transition-all duration-300">
+                <span className="linkText absolute hidden -translate-y-7 bg-gray-200 p-1 text-black w-max h-max rounded-2xl text-[11px]">Source Code</span>
+                <a href={project.projSourceCodeLink} target="_blank" rel="noopener noreferrer" className="bg-white hover:opacity-70 text-black w-10 h-10 flex items-center justify-center p-1 rounded-full" style={{ boxShadow: "0 0 5px #ffffff" }}>
+                  <i className="fas fa-link text-gray-800"></i>
+                </a>
+              </div>
+            )}
+
+            <button onClick={handleExpand} className="bg-white w-full h-10 rounded-3xl cursor-pointer text-[13px] text-indigo-950 hover:opacity-70 hover:mx-5 transition-all duration-200" style={{ boxShadow: "0 0 5px #ffffff" }}>
+              See More..
+            </button>
           </div>
         </article>
       </motion.div>
     </TinderCard>
   );
-}, (prevProps, nextProps) => {
-  // Custom comparison function for memo
-  return (
-    prevProps.project._id === nextProps.project._id &&
-    prevProps.pos.x === nextProps.pos.x &&
-    prevProps.pos.y === nextProps.pos.y &&
-    prevProps.pos.rotate === nextProps.pos.rotate &&
-    prevProps.isDragged === nextProps.isDragged
-  );
-});
+}, (prevProps, nextProps) => prevProps.project._id === nextProps.project._id && prevProps.pos.x === nextProps.pos.x && prevProps.pos.y === nextProps.pos.y && prevProps.pos.rotate === nextProps.pos.rotate && prevProps.isDragged === nextProps.isDragged);
 
-ProjectCard.displayName = 'ProjectCard';
+ProjectCard.displayName = "ProjectCard";
 
 export default ProjectCard;
