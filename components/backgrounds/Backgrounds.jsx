@@ -31,7 +31,7 @@ export default function Backgrounds() {
   }
 
   return (
-    <div className="fixed inset-0 z-[-1]">
+    <main className="fixed inset-0 z-[-1]">
       <ErrorBoundary componentName="Backgrounds" fallback={<BgFallback />}>
         <StarsBackground />
       </ErrorBoundary>
@@ -39,6 +39,6 @@ export default function Backgrounds() {
         <ErrorBoundary componentName="Backgrounds" fallback={<BgFallback />}>
           <ThreeBackground />
         </ErrorBoundary>}
-    </div>
+    </main>
   );
 }

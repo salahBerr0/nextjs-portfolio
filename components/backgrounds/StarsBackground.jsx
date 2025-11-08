@@ -146,13 +146,13 @@ const particlesInit = useCallback(async (engine) => {
   }
 
   return (
-    <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black to-gray-900">        
+    <main className="fixed inset-0 -z-10 bg-gradient-to-br from-black to-gray-900">        
       <Particles 
         id="tsparticles" 
         init={particlesInit} 
         options={particlesOptions}
         className="opacity-100"
       />
-    </div>
+    </main>
   );
 }

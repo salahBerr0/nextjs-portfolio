@@ -11,7 +11,7 @@ const formatDate = (dateStr) => {
   });
 };
 
-//constants for better performance and maintainability
+// Constants for better performance and maintainability
 const WORK_CONFIG = {
   bgColor: "#0db988",
   titleKey: "expTitle",
@@ -42,12 +42,17 @@ const TimelineItem = ({ item, type }) => {
   const dateRange = `${formatDate(item.startDate)} - ${formatDate(item.endDate)}`;
   
   return (
-    <div className="relative pl-8 pb-8 pt-2 border-l-2 border-white">
+    <article
+      tabIndex={0}
+      role="listitem"
+      aria-label={`${type === "work" ? "Work experience" : "Education"}: ${item[config.titleKey]} at ${item[config.subtitleKey]}, from ${dateRange}`}
+      className="relative pl-8 pb-8 pt-2 border-l-2 border-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md"
+    >
       <TimelineDot bgColor={config.bgColor} />
       
       {/* Date */}
       <div className="flex items-center justify-start gap-2">
-        <div className="w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-b-[7px] rotate-90 border-b-gray-200"></div>
+        <div className="w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-b-[7px] rotate-90 border-b-gray-200" aria-hidden="true"></div>
         <span className="text-sm text-gray-200">{dateRange}</span>
       </div>
       
@@ -67,7 +72,7 @@ const TimelineItem = ({ item, type }) => {
           ))}
         </ul>
       </div>
-    </div>
+    </article>
   );
 };
 
@@ -93,21 +98,26 @@ const processTimelineData = () => {
     .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
 };
 
-export default  function Experience() {
-    const timelineEntries = processTimelineData();
+export default function Experience() {
+  const timelineEntries = processTimelineData();
 
   return (
-    <section id="experience" className="min-h-screen grid px-5 sm:px-8 md:px-16">
-      <div role="textbox" className="grid content-center justify-items-start w-full max-w-4xl">
+    <section 
+      id="experience" 
+      className="min-h-screen grid px-5 sm:px-8 md:px-16" 
+      aria-label="Work Experience and Education Timeline"
+      tabIndex={-1}
+    >
+      <header role="banner" className="max-w-4xl mb-8">
         <p className="text-[#dfd9ff] font-medium lg:text-[30px] sm:text-[26px] xs:text-[20px] text-[16px] lg:leading-[40px]">
           What I have done so far
         </p>
         <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px]">
           Work Experience & Education
         </h2>
-      </div>
+      </header>
       
-      <div className="relative">
+      <div role="list" className="relative">
         {timelineEntries.map((experience) => (
           <TimelineItem 
             key={experience.key}

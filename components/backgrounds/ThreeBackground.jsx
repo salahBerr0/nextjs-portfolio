@@ -169,7 +169,7 @@ usePerformanceMonitor('ThreeBackground', {
   }
 
   return (
-    <div className="fixed inset-0 -z-10">
+    <main className="fixed inset-0 -z-10">
       <Canvas
         camera={{ 
           position: [0, 0, 5], 
@@ -194,6 +194,6 @@ usePerformanceMonitor('ThreeBackground', {
         <Scene3D scrollPosition={memoizedScrollProgress} />
         <Preload all />
       </Canvas>
-    </div>
+    </main>
   );
 }

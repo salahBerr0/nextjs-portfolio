@@ -20,7 +20,7 @@ const SECTION_CONFIG = Object.freeze({
   about: { position: [0.5, 0, 0], positionMd: [0.5, -0.2, 3], positionLg: [1.25, -0.5, 0], rotation: [0, 3, 0], scale: 1 },
   skill: { position: [0, 0.45, 0], rotation: [0, 7, 0], scale: 6 },
   project: { position: [0, -0.5, 0], rotation: [0, 0, 0], scale: 13 },
-  experience: { position: [0, 0, 0], rotation: [-0.5, -6, 0], scale: 8 }
+  experience: { position: [0, 0, 0], rotation: [-0.5, -3, 0], scale: 8 }
 });
 
 const SECTIONS = ['hero', 'about', 'skill', 'project', 'experience'];

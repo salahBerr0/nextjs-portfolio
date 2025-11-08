@@ -43,21 +43,17 @@ export default class ErrorBoundary extends Component {
           })
         ) : (
           <main className="p-4 border border-red-300 bg-red-50 rounded-lg grid content-center justify-items-center gap-3 z-50">
-            <div role="textbox" aria-label="alert of website won't work" className="text-center">
+            <article role="textbox" aria-label="alert of website won't work" className="text-center">
               <i className="fas fa-exclamation-triangle text-red-600 text-xl mb-2"></i>
               <h3 className="text-red-800 font-semibold mb-1">{this.props.componentName || 'Component'} Failed to Load</h3>
               <p className="text-red-600 text-sm mb-3 max-w-md">{this.state.error?.message || 'Something went wrong'}</p>
-            </div>
-            <div role="button" aria-label="refresh buttons" className="flex gap-2">
-              <button 
-                onClick={this.retry} 
-                disabled={this.state.isRetrying}
-                className="bg-red-600 text-white px-4 py-2 rounded-full text-sm hover:bg-red-700 transition-colors disabled:opacity-50"
-              >
+            </article>
+            <article role="button" aria-label="refresh buttons" className="flex gap-2">
+              <button  onClick={this.retry}  disabled={this.state.isRetrying} className="bg-red-600 text-white px-4 py-2 rounded-full text-sm hover:bg-red-700 transition-colors disabled:opacity-50">
                 {this.state.isRetrying ? 'Retrying...' : 'Try Again'}
               </button>
               <button onClick={() => window.location.reload()} className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm hover:bg-gray-700 transition-colors">Reload Page</button>
-            </div>
+            </article>
           </main>
         )
       );
