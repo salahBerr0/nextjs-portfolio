@@ -4,13 +4,13 @@ import React, { useMemo } from "react";
 
 // Constants for better maintainability
 const SOCIAL_LINKS = [
-  {href: "https://www.linkedin.com/in/salah-eddine-berredjem-2a3953361/",src: '/imgs/linkedin.png',
+  {href: "https://www.linkedin.com/in/salah-eddine-berredjem-2a3953361/",src: '/imgs/linkedin.webp',
     target: "_blank",alt: 'LinkedIn icon',width: 40,height: 40,containerClass: "w-16 h-16"
   },
-  {href: "mailto:berredjem.salah.eddine@gmail.com",src: '/imgs/gMail.png',
+  {href: "mailto:berredjem.salah.eddine@gmail.com",src: '/imgs/gmail.webp',
     target: "_blank",alt: 'Gmail icon', width: 40,height: 40,containerClass: "w-20 h-20"
   },
-  {href: "https://github.com/salahBerr0",src: '/imgs/gitHub.png',
+  {href: "https://github.com/salahBerr0",src: '/imgs/gitHub.webp',
     target: "_blank",alt: 'GitHub icon',width: 40,height: 40,containerClass: "w-16 h-16"
   }
 ];
@@ -39,7 +39,7 @@ export default function Footer() {
   );
 
   return (
-    <footer id="footer" className="w-full h-[500px] border-t-[2px] py-4 mt-16 px-4 grid content-center justify-items-center gap-4 backdrop-blur-lg z-50"  style={{ boxShadow: '0 0px 5px #fff' }}>
+    <footer id="footer" className="w-full h-[600px] border-t-[2px] py-4 mt-16 px-4 grid content-center justify-items-center gap-4 backdrop-blur-lg z-50"  style={{ boxShadow: '0 0px 5px #fff' }}>
       {/* Brand Name */}
       <div role="textbox" aria-label="My fist and last Name" className="flex items-center justify-center gap-3">
         <span  className="font-bold text-[60px] text-center" style={{ textShadow: '0 0 1px #fff' }}>Berredjem Salah | Portfolio</span>

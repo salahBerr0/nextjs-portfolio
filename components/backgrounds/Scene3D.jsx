@@ -12,6 +12,8 @@ import { useGLTF, Html, useProgress, Preload } from '@react-three/drei';
 import * as THREE from 'three';
 import usePerformanceMonitor from '@/hooks/usePerformanceMonitor';
 
+// Preload the model immediately when component is imported
+useGLTF.preload('/gltfmodels/bs3d-draco.glb');
 // Immutable config
 const SECTION_CONFIG = Object.freeze({
   hero: { position: [0, -0.5, 0], positionLg: [1.5, -0.2, 0], rotation: [0, 0, 0], scale: 11, scaleLg: 15 },

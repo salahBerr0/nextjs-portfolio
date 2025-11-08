@@ -6,7 +6,7 @@ import { loadSlim } from "tsparticles-slim";
 
 export default function StarsBackground() {
   usePerformanceMonitor('StarsBackground', {
-    warnThreshold: 80, // Lower threshold for stars
+    warnThreshold: 80,
     errorThreshold: 150,
     preventDuplicates: true
   });
@@ -46,7 +46,7 @@ const particlesInit = useCallback(async (engine) => {
         value: "transparent" 
       } 
     },
-    fpsLimit: 120, // Higher FPS for smoother animation
+    fpsLimit: 60, // Higher FPS for smoother animation
     interactivity: {
       events: {
         onHover: {

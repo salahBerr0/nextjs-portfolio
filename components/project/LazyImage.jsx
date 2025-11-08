@@ -8,25 +8,37 @@ const LazyImage = memo(({ src, alt, width, height, className, priority = false, 
 
   if (hasError) {
     return (
-      <div className={`${className} bg-gray-200 flex items-center justify-center`}>
-        <span className="text-gray-500 text-sm">Image failed to load</span>
+      <div className={`${className} bg-gray-800 flex items-center justify-center rounded-lg`}>
+        <span className="text-gray-400 text-sm">Failed to load</span>
       </div>
     );
   }
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      loading={priority || index < 3 ? "eager" : "lazy"}
-      placeholder="blur"
-      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-      onLoad={() => setIsLoaded(true)}
-      onError={() => setHasError(true)}
-    />
+    <div className={`relative ${className}`}>
+      {/* Skeleton Loader */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-700 rounded-lg animate-pulse z-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            <span className="text-white/50 text-xs">Loading...</span>
+          </div>
+        </div>
+      )}
+      
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={`w-full h-auto transition-opacity duration-500 ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        loading={priority || index < 3 ? "eager" : "lazy"}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </div>
   );
 });
 
