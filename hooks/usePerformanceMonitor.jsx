@@ -26,11 +26,6 @@ export default function usePerformanceMonitor(componentName, options = {}) {
       resourcesLoaded.current = true;
       const resourceLoadTime = performance.now() - startTime.current;
       console.log(`📦 ${componentName} resources loaded in: ${resourceLoadTime.toFixed(2)}ms`);
-      
-      if (resourceLoadTime > warnThreshold) {
-        const level = resourceLoadTime > errorThreshold ? 'error' : 'warn';
-        console[level](`${level === 'error' ? '🚨' : '⚠️'} ${componentName} slow resources: ${resourceLoadTime.toFixed(2)}ms`);
-      }
     }
   };
 

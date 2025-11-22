@@ -1,207 +1,140 @@
-import React, { useCallback, useMemo, lazy, Suspense } from "react";
+"use client";
+import React, { useMemo, memo } from "react";
+import { motion } from "framer-motion";
 import LazyImage from "./LazyImage";
-import { useInView } from "react-intersection-observer";
+import LazyVideo from "./LazyVideo";
+import Image from "next/image";
 
-// Lazy load MediaItem to reduce initial bundle and improve scroll performance
-const MediaItem = lazy(() => import("./MediaItem")); // Assume MediaItem is a separate file optimized similarly
+// Lazy loaded media content for expanded card
+const LazyMediaContent = memo(({ project }) => {
+  const allMedia = useMemo(() => {
+    const images = (project.projImageUrls || []).map(img => ({ ...img, type: 'image' }));
+    const videos = (project.projVideosUrls || []).map(vid => ({
+      ...(typeof vid === 'string' ? { priority: 1, url: vid } : vid),
+      type: 'video'
+    }));
+    
+    return [...images, ...videos].sort((a, b) => a.priority - b.priority);
+  }, [project.projImageUrls, project.projVideosUrls]);
 
-const MediaContent = React.memo(({ project }) => {
-  const allMedia = useMemo(
-    () => [
-      ...project.projImageUrls.map((img) => ({ ...img, type: "image" })),
-      ...(project.projVideosUrls
-        ? project.projVideosUrls.map((vid) =>
-            typeof vid === "string" ? { priority: 1, url: vid, type: "video" } : { ...vid, type: "video" }
-          )
-        : []),
-    ].sort((a, b) => a.priority - b.priority),
-    [project.projImageUrls, project.projVideosUrls]
-  );
+  if (allMedia.length === 0) {
+    return <p className="text-gray-400 text-center py-8">No media available</p>;
+  }
 
-  // Suspense handles lazy loaded media
   return (
-    <section
-      className="grid content-center justify-items-center w-full gap-4"
-      aria-label={`Media content of project ${project.projTitle}`}
-    >
-      <Suspense fallback={<div className="animate-pulse w-full h-[400px] bg-gray-800 rounded-lg" aria-hidden="true" />}>
-        {allMedia.map((media, i) => (
-          <MediaItem key={`${media.type}-${i}`} media={media} index={i} projectTitle={project.projTitle} />
-        ))}
-      </Suspense>
-    </section>
+    <div className="grid md:grid-cols-2 content-center justify-items-center w-full gap-3">
+      {allMedia.map((media, i) => {
+        if (media.type === 'image') {
+          return (
+            <div key={`img-${media.priority}-${i}`} className=" flex items-center justify-center">
+              <LazyImage  src={media.url}  alt={`${project.projTitle} image ${i + 1}`}/>
+            </div>
+          );
+        } else {
+          return (
+            <div key={`video-${media.priority}-${i}`} className=" flex items-center justify-center">
+              <LazyVideo src={media.url} />
+            </div>
+          );
+        }
+      })}
+    </div>
   );
 });
 
-const ExpandedProjectCard = ({
-  project,
-  toolsMap,
-  closeExpanded,
-}) => {
-  const techStack = useMemo(
-    () =>
-      project.projTechStack
-        .map((techId, idx) => {
-          const tool = toolsMap[techId];
-          if (!tool) return null;
-          return (
-            <li
-              key={`${techId}-${idx}`}
-              className="bigLinksDiv grid content-center justify-items-center gap-2"
-              tabIndex={0}
-              aria-label={`Technology tool: ${tool.toolName}`}
-            >
-              <LazyImage
-                src={tool.toolImageUrl}
-                alt={tool.toolName}
-                width={40}
-                height={40}
-                className="object-contain w-10 h-10 bg-gray-800 p-1 rounded-lg flex items-center justify-center border border-gray-600 hover:scale-110 duration-300 transition-transform focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                priority={idx < 8}
-                index={idx}
-              />
-              <span className="linkText hidden absolute translate-y-12 p-1 text-xs font-bold text-indigo-800 bg-indigo-100 rounded-sm">{tool.toolName}</span>
-            </li>
-          );
-        })
-        .filter(Boolean),
-    [project.projTechStack, toolsMap]
-  );
+LazyMediaContent.displayName = 'LazyMediaContent';
+
+/* ---------------- EXPANDED CARD ---------------- */
+const ExpandedProjectCard = memo(({ project, toolsMap, onClose }) => {
+  const techStack = useMemo(() => {
+    if (!project.projTechStack || !toolsMap) return null;
+    
+    return project.projTechStack.map((techId, idx) => {
+      const tool = toolsMap[techId];
+      if (!tool) return null;
+
+      return (
+        <li key={`${techId}-${idx}`} className="relative grid content-center justify-items-center gap-2 group">
+          <Image src={tool.toolImageUrl}  alt={tool.toolName} width={28} height={28} className="object-contain bg-gray-400/50 p-0 rounded-lg border border-gray-200 hover:scale-[1.1] duration-300 transition-transform"/>
+          <span className="hidden group-hover:block absolute -bottom-8 p-1 text-xs font-bold text-emerald-800 bg-indigo-100 rounded-sm whitespace-nowrap z-10">
+            {tool.toolName}
+          </span>
+        </li>
+      );
+    }).filter(Boolean);
+  }, [project.projTechStack, toolsMap]);
 
   const categories = useMemo(() => {
     if (Array.isArray(project.projCategory)) {
       return project.projCategory.map((category, index) => (
-        <span
-          key={index}
-          className="bg-indigo-600/40 px-3 py-1 text-sm text-white rounded-full border border-indigo-400/30"
-          style={{ boxShadow: "0 0 8px rgba(99, 102, 241, 0.3)" }}
-        >
+        <span  key={`category-${index}`} className="bg-emerald-500/30 px-3 py-1 text-sm text-white rounded-lg"  style={{boxShadow:'0 0 2px #ffffff'}}>
           {category}
         </span>
       ));
     }
     return (
-      <span
-        className="bg-indigo-600/40 px-3 py-1 text-sm text-white rounded-full border border-indigo-400/30"
-        style={{ boxShadow: "0 0 8px rgba(99, 102, 241, 0.3)" }}
-      >
+      <span  className="bg-emerald-500/30 px-3 py-1 text-sm text-white rounded-lg"  style={{boxShadow:'0 0 2px #ffffff'}}>
         {project.projCategory}
       </span>
     );
   }, [project.projCategory]);
 
-  const handleClose = useCallback(() => {
-    closeExpanded();
-  }, [closeExpanded]);
+  const hasLiveDemo = project.projLiveDemoLink && project.projLiveDemoLink !== 'demoLink1';
+  const hasSourceCode = project.projSourceCodeLink && project.projSourceCodeLink !== 'sourcelink1';
 
   return (
-    <section
-      className="w-full bg-black/90 backdrop-blur-sm border border-white/20 rounded-3xl text-white py-8 px-4 shadow-2xl max-h-[calc(100vh-40px)] overflow-auto"
-      style={{ position: "relative", top: 0, left: 0, zIndex: 100 }}
-      aria-labelledby="project-title"
-      role="dialog"
-    >
-      <header
-        id="project-title"
-        className="sticky top-0 z-20 mb-8 border-b border-white/20 pb-6 bg-black/95 backdrop-blur-md w-full grid content-center justify-items-center xl:flex xl:items-center xl:justify-between px-3"
-      >
-        <article
-          className="w-full grid content-between gap-3 justify-items-start"
-          aria-label={`Information about project titled ${project.projTitle}`}
-        >
-          <h1 className="text-3xl font-bold w-full bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-            {project.projTitle}
-          </h1>
-          <p className="text-indigo-400 text-lg font-semibold">"{project.projTagLine}"</p>
-          <div className="flex flex-wrap gap-2 mb-2" aria-label="Project categories">
-            {categories}
-          </div>
-        </article>
-        <article
-          className="flex items-center w-full justify-center xl:justify-end gap-8 mt-4 xl:mt-0"
-          aria-label="Project interaction buttons and appreciation count"
-        >
-          <span
-            className="text-[15px] text-white/90 font-semibold px-3 py-1 bg-white/10 rounded-full backdrop-blur-sm"
-            aria-live="polite"
-          >
-            Appreciations: {project.projLikesCount}
-            <i
-              className="fas fa-clover text-indigo-400 ml-2 hover:scale-110 duration-300 transition-transform cursor-pointer"
-              aria-hidden="true"
-            ></i>
-          </span>
-          <div className="flex w-max h-16 gap-4 p-3 border border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm">
-            {project.projLiveDemoLink && (
-              <div className="bigLinksDiv grid content-center justify-items-center hover:scale-110 transition-all duration-300 group">
-                <span
-                  className="linkText absolute hidden -translate-y-8 bg-indigo-600 px-2 py-1 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  aria-hidden="true"
-                >
-                  Live Demo
-                </span>
-                <a
-                  href={project.projLiveDemoLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-indigo-600 w-10 h-10 flex items-center justify-center p-1 rounded-full hover:bg-indigo-700 transition-colors duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  aria-label={`Open live demo of ${project.projTitle} in new tab`}
-                >
-                  <i className="fas fa-link text-white" aria-hidden="true"></i>
-                </a>
+    <motion.div  className="fixed inset-0 bg-black/90 backdrop-blur-sm z-40 flex items-center justify-center" style={{ paddingTop: '80px', paddingBottom: '20px' }} initial={{ opacity: 0 }}   animate={{ opacity: 1 }}   exit={{ opacity: 0 }}  transition={{ duration: 0.3 }}  onClick={onClose}>
+      <motion.div className="relative w-full mx-5 sm:mx-16 max-w-6xl bg-black border-2 border-white rounded-t-xl text-white flex flex-col " style={{  maxHeight: 'calc(100vh - 100px)',}} initial={{ y: 100 }}  animate={{ y: 0 }}  exit={{ y: 100 }} transition={{ duration: 0.3 }} onClick={(e) => e.stopPropagation()}>
+        {/* Fixed Header */}
+        <header className="sticky top-0 z-10 bg-black border-b-2 border-gray-700 rounded-t-3xl md:rounded-t-3xl px-4 py-4 md:px-6 md:py-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-0">
+            <article className="flex-1 w-full gap-2 mb-3">
+              <h1 className="text-2xl md:text-3xl font-bold">{project.projTitle}</h1>
+              <p className="text-emerald-400 text-sm md:text-base font-semibold mb-2">"{project.projTagLine}"</p>
+              <div className="flex flex-wrap gap-2">
+                {categories}
+                {techStack && techStack.length > 0 && (<ul className="flex items-center gap-1 flex-wrap">{techStack}</ul>)}
               </div>
-            )}
-            {project.projSourceCodeLink && (
-              <div className="bigLinksDiv grid content-center justify-items-center hover:scale-110 transition-all duration-300 group">
-                <span
-                  className="linkText absolute hidden -translate-y-8 bg-gray-800 px-2 py-1 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  aria-hidden="true"
-                >
-                  Source Code
-                </span>
-                <a
-                  href={project.projSourceCodeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white w-10 h-10 flex items-center justify-center p-1 rounded-full hover:bg-gray-200 transition-colors duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  aria-label={`Open source code repository of ${project.projTitle} in new tab`}
-                >
-                  <i className="fas fa-link text-gray-800" aria-hidden="true"></i>
-                </a>
+              <div className="flex flex-wrap gap-2">
+                {hasLiveDemo && (
+                  <a  href={project.projLiveDemoLink}  target="_blank"  rel="noopener noreferrer"  className="text-sm w-max h-7  text-emerald-500 underline flex items-center justify-center rounded-lg hover:opacity-70 hover:px-10 transition-all duration-200">
+                    Live Demo
+                  </a>
+                )}
+                  
+                {hasSourceCode && (
+                  <a  href={project.projSourceCodeLink}  target="_blank"  rel="noopener noreferrer"  className="text-sm w-max h-7 text-white underline flex items-center justify-center rounded-lg hover:opacity-70 hover:px-10 transition-all duration-200">
+                    Source Code
+                  </a>
+                )}
               </div>
-            )}
-            <button
-              onClick={handleClose}
-              className="bg-white text-gray-900 hover:bg-gray-200 w-max px-6 rounded-2xl cursor-pointer text-sm font-medium py-2 hover:px-8 transition-all duration-300 shadow-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              aria-label="Close project details"
-            >
-              See Less
-            </button>
+            </article>
+            
+            <article className="flex items-center justify-center lg:justify-end w-full lg:w-auto min-w-[200px]">
+                <button  onClick={onClose}  className="bg-red-800 text-white w-full h-7 rounded-lg text-xs font-semibold hover:bg-red-300 hover:text-black transition-colors"  >
+                  Close
+                </button>
+            </article>
           </div>
-        </article>
-      </header>
-
-      <article
-        className="mb-6 grid content-center justify-items-center gap-8"
-        aria-label="Project technology stack and description"
-      >
-        <div className="w-full flex items-start justify-start gap-6">
-          <p className="font-bold text-white/90 w-[180px] flex-shrink-0 text-lg">Tech Stack:</p>
-          <ul className="flex items-center justify-start gap-3 flex-wrap">{techStack}</ul>
+        </header>
+        
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-scroll px-4 py-6 md:px-6 custom-scrollbar">
+          {/* Description */}
+          <div className="mb-6">
+            <p className="bg-white text-black p-4 rounded-md text-sm md:text-base leading-relaxed">
+              {project.projDescription}
+            </p>
+          </div>
+          
+          {/* Media Content */}
+          <LazyMediaContent project={project} />
         </div>
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 w-full">
-          <p className="text-white/90 text-lg leading-relaxed">{project.projDescription}</p>
-        </div>
-      </article>
-
-      <article
-        className="grid content-center justify-items-center gap-4"
-        aria-label="Project media content"
-      >
-        <MediaContent project={project} />
-      </article>
-    </section>
+      </motion.div>
+    </motion.div>
   );
-};
+});
+
+ExpandedProjectCard.displayName = 'ExpandedProjectCard';
 
 export default ExpandedProjectCard;

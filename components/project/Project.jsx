@@ -2,11 +2,13 @@ import { Tools } from "@/data/Tools";
 import { Projects } from "@/data/Projects";
 import dynamic from "next/dynamic";
 
-const ProjectClient = dynamic(() => import("./Project.client"), { ssr: false });
+const ProjectClient = dynamic(() => import("./Project.client"), { 
+  ssr: false 
+});
 
 export default function Project() {
   const projectsData = Projects.map(project => ({
-    _id: project._id,
+    id: project._id,
     projTitle: project.projTitle,
     projTagLine: project.projTagLine,
     projCategory: project.projCategory,
@@ -18,6 +20,7 @@ export default function Project() {
     projVideosUrls: project.projVideosUrls,
     projTechStack: project.projTechStack
   }));
+  console.log('Mapped projects:', projectsData.map(p => ({ id: p.id, title: p.projTitle })));
 
   const toolsMap = Tools.reduce((map, tool) => {
     map[tool._id] = {
@@ -38,7 +41,7 @@ export default function Project() {
           What I have done so far
         </p>
         <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px]">
-          Recently Projects
+          Recent Projects
         </h2>
       </div>
 

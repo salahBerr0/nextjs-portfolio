@@ -3,7 +3,6 @@ import Image from "next/image";
 
 const VIDEO_SRC = "/vds/bsVd2.webm";
 const VIDEO_POSTER = "/imgs/video-poster.webp";
-const PROFILE_IMAGE = '/imgs/profileIMG.JPG';
 
 export default function About() {
   return (
@@ -24,8 +23,20 @@ export default function About() {
 
           <div className="flex items-center justify-center gap-4">
             <figure className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] rounded-md overflow-hidden hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]">
-              <Image  src={PROFILE_IMAGE}  alt="Profile image of Salah Berredjem"  width={300}  height={300}  className="object-cover w-full h-full"  priority />
-              <figcaption className="sr-only">Profile image of Salah Berredjem</figcaption>
+<Image 
+  src='/imgs/profileIMG.webp' 
+  alt="Profile image of Salah Berredjem" 
+  width={300} 
+  height={300} 
+  className="object-cover w-full h-full" 
+  priority
+  // Add these props to ensure consistency
+  placeholder="empty"
+  onError={(e) => {
+    // Fallback handling if needed
+    console.error('Image failed to load:', e);
+  }}
+/>              <figcaption className="sr-only">Profile image of Salah Berredjem</figcaption>
             </figure>
 
             <figure className="relative w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] rounded-md overflow-hidden hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]">

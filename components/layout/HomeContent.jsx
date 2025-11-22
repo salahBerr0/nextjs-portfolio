@@ -6,8 +6,6 @@ import MediumPriorityFallback from "../fallbacks/MediumPriorityFallback";
 import About from "../sections/About";
 import Hero from "../sections/Hero";
 import dynamic from "next/dynamic";
-
-
 // Only dynamically import heavier, below-fold components
 const Skill = dynamic(() => import("@/components/sections/Skill"));
 const Project = dynamic(() => import("@/components/project/Project"));
@@ -76,7 +74,6 @@ export default function HomeContent() {
           {visibleSections.skill && <Skill />}
         </Suspense>
       </ErrorBoundary>
-
       <ErrorBoundary componentName="Project Section" fallback={<MediumPriorityFallback componentName="Project Section" />}>
         <Suspense fallback={<MediumPriorityFallback componentName="Project Section" />}>
           {visibleSections.project && <Project />}

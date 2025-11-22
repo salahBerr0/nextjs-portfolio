@@ -134,3 +134,10 @@ canvas {
 .animate-scroll-reverse:hover {
   animation-play-state: paused;
 }
+
+
+/* Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: white #1f2937;
+}

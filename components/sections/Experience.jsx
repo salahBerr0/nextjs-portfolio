@@ -95,7 +95,7 @@ const processTimelineData = () => {
   }));
 
   return [...workEntries, ...educationEntries]
-    .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+    .sort((b, a) => new Date(b.startDate) - new Date(a.startDate));
 };
 
 export default function Experience() {

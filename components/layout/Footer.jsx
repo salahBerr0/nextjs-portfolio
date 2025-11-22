@@ -7,7 +7,7 @@ const SOCIAL_LINKS = [
     target: "_blank", alt: 'LinkedIn icon', width: 40, height: 40, containerClass: "w-16 h-16"
   },
   { href: "mailto:berredjem.salah.eddine@gmail.com", src: '/imgs/gmail.webp',
-    target: "_blank", alt: 'Gmail icon', width: 40, height: 40, containerClass: "w-20 h-20"
+    target: "_blank", alt: 'Gmail icon', width: 40, height: 40, containerClass: "w-16 h-16"
   },
   { href: "https://github.com/salahBerr0", src: '/imgs/gitHub.webp',
     target: "_blank", alt: 'GitHub icon', width: 40, height: 40, containerClass: "w-16 h-16"
@@ -18,9 +18,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 const SocialLink = React.memo(({ href, src, alt, width, height, containerClass, target }) => (
   <Link href={href} target={target} prefetch={false} rel="noopener noreferrer" aria-label={`Link to ${alt}`}>
-    <div className={`${containerClass} cursor-pointer hover:scale-110 transition-all duration-200 hover:opacity-70`}>
-      <Image src={src} alt={alt} width={width} height={height} className="w-full h-full object-contain" loading="lazy" />
-    </div>
+      <Image src={src} alt={alt} width={width} height={height} className="w-8 h-8 mx-3 object-contain opacity-70 hover:opacity-100" loading="lazy"/>
   </Link>
 ));
 
@@ -48,7 +46,7 @@ export default function Footer() {
 
 
       <span className="text-[20px] text-center" aria-label={`Copyright ${CURRENT_YEAR}`}>
-        ©{CURRENT_YEAR}. <strong>www.salah-berredjem-portfolio</strong>
+        ©{CURRENT_YEAR}. www.salah-berredjem-portfolio
       </span>
 
       <Image src='/imgs/bs3d.png' alt='Berredjem Salah logo' width={60} height={60} priority loading="eager" className="w-auto h-auto" />
