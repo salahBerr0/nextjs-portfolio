@@ -46,7 +46,7 @@ export default function Footer() {
 
 
       <span className="text-[20px] text-center" aria-label={`Copyright ${CURRENT_YEAR}`}>
-        ©{CURRENT_YEAR}. www.salah-berredjem-portfolio
+        ©{CURRENT_YEAR}. Salah Eddine Berredjem Portfolio
       </span>
 
       <Image src='/imgs/bs3d.png' alt='Berredjem Salah logo' width={60} height={60} priority loading="eager" className="w-auto h-auto" />

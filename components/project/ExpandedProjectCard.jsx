@@ -55,7 +55,7 @@ const ExpandedProjectCard = memo(({ project, toolsMap, onClose }) => {
 
       return (
         <li key={`${techId}-${idx}`} className="relative grid content-center justify-items-center gap-2 group">
-          <Image src={tool.toolImageUrl}  alt={tool.toolName} width={28} height={28} className="object-contain bg-gray-400/50 p-0 rounded-lg border border-gray-200 hover:scale-[1.1] duration-300 transition-transform"/>
+          <Image src={tool.toolImageUrl}  alt={tool.toolName} width={28} height={28} className="object-contain bg-gray-400/50 p-0 w-7 h-7 rounded-lg border border-gray-200 hover:scale-[1.1] duration-300 transition-transform"/>
           <span className="hidden group-hover:block absolute -bottom-8 p-1 text-xs font-bold text-emerald-800 bg-indigo-100 rounded-sm whitespace-nowrap z-10">
             {tool.toolName}
           </span>
@@ -119,7 +119,7 @@ const ExpandedProjectCard = memo(({ project, toolsMap, onClose }) => {
         </header>
         
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-scroll px-4 py-6 md:px-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll overflow-x-hidden px-4 py-6 md:px-6 custom-scrollbar">
           {/* Description */}
           <div className="mb-6">
             <p className="bg-white text-black p-4 rounded-md text-sm md:text-base leading-relaxed">
