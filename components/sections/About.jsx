@@ -24,7 +24,7 @@ export default function About() {
           <div className="flex items-center justify-center gap-4">
             <figure className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] rounded-md overflow-hidden hover:shadow-[0_0_5px_#ffffff] duration-300 transition-all hover:scale-[1.01]">
 <Image 
-  src='/imgs/profileIMG.webp' 
+  src='/imgs/salah.png' 
   alt="Profile image of Salah Berredjem" 
   width={300} 
   height={300} 
