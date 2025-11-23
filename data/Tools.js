@@ -24,4 +24,10 @@ export const Tools = [
   { _id: '23', toolName: 'Paquet Tracer', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760832995/CiscoPaquetTracer_tdxlhk.webp'},
   { _id: '24', toolName: 'Cap Cut', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760832995/CapCut_vj1llh.webp'},
   { _id: '25', toolName: 'VN', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760833150/VN_jezdqj.webp'},
+  { _id: '26', toolName: 'Tailwind css', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760833449/TailwindCss_owlt70.webp'},
+  { _id: '27', toolName: 'Next JS', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760833418/NextJS_dnfnef.webp'},
+  { _id: '28', toolName: 'Node JS', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760833437/NodeJS_nygl7i.webp'},
+  { _id: '29', toolName: 'Express JS', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760833287/ExpressJS_kybfms.webp'},
+  { _id: '30', toolName: 'Firebase', toolImageUrl: 'https://res.cloudinary.com/dzpj6c5pw/image/upload/f_auto,q_auto/v1760833287/firebasess_bmrmju.png'},
+
 ];
